@@ -15,7 +15,7 @@ let CompanyConfig = class CompanyConfig {
 };
 exports.CompanyConfig = CompanyConfig;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true, index: true }),
     __metadata("design:type", String)
 ], CompanyConfig.prototype, "companyId", void 0);
 __decorate([
@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:type", String)
 ], CompanyConfig.prototype, "email", void 0);
 exports.CompanyConfig = CompanyConfig = __decorate([
-    (0, mongoose_1.Schema)()
+    (0, mongoose_1.Schema)({ collection: 'company_config', timestamps: true })
 ], CompanyConfig);
 exports.CompanyConfigSchema = mongoose_1.SchemaFactory.createForClass(CompanyConfig);
 //# sourceMappingURL=company-config.schema.js.map
