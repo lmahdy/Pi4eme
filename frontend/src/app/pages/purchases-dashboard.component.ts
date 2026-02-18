@@ -83,7 +83,7 @@ export class PurchasesDashboardComponent implements OnInit {
   stock: any[] = [];
   alerts: any[] = [];
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit() {
     this.loadData();

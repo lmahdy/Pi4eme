@@ -57,7 +57,7 @@ export class LoginComponent {
   email = 'owner@demo.com';
   password = 'Password123!';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   submit() {
     this.authService.login(this.email, this.password).subscribe({

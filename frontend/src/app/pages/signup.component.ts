@@ -71,7 +71,7 @@ export class SignupComponent {
   notificationEmail = '';
   companyId = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   submit() {
     this.authService

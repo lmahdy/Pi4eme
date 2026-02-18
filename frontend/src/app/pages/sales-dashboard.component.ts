@@ -50,7 +50,7 @@ export class SalesDashboardComponent implements OnInit {
     datasets: [{ data: [], label: 'Revenue', backgroundColor: '#10b981' }],
   };
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit() {
     this.loadCharts();
