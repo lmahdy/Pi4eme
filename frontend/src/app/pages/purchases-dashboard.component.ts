@@ -16,7 +16,7 @@ import { ApiService } from '../services/api.service';
       </div>
       <div class="card">
         <h2>Inventory Alerts</h2>
-        <div *ngIf="alerts.length === 0">No high risk alerts.</div>
+        <div *ngIf="alerts.length === 0">No high-risk inventory alerts.</div>
         <div *ngFor="let alert of alerts" class="alert">
           <span class="badge badge-high">High</span>
           {{ alert.item }} - stockout in {{ alert.predicted_stockout_days }} days

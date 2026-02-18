@@ -43,7 +43,7 @@ import { AuthService } from '../services/auth.service';
         <ng-container *ngIf="role === 'Accountant'">
           <label>Existing Company ID</label>
           <input type="text" [(ngModel)]="companyId" name="companyId" required />
-          <p class="hint">Ask the owner for the companyId (shown in their /company/config response).</p>
+          <p class="hint">Ask the owner for the company ID (see their /company/config response).</p>
         </ng-container>
 
         <button class="button" type="submit">Sign Up</button>

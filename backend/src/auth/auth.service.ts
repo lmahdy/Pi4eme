@@ -27,12 +27,12 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.userModel.findOne({ email: email.toLowerCase() }).exec();
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     const payload: JwtPayload = {
@@ -57,13 +57,13 @@ export class AuthService {
     const email = dto.email.toLowerCase();
     const existing = await this.userModel.exists({ email });
     if (existing) {
-      throw new BadRequestException('Email already registered');
+      throw new BadRequestException('Email address is already registered');
     }
 
     let companyId: string;
     if (dto.role === UserRole.CompanyOwner) {
       if (!dto.companyName || dto.taxRate === undefined || dto.currency === undefined) {
-        throw new BadRequestException('companyName, taxRate, and currency are required for CompanyOwner');
+        throw new BadRequestException('companyName, taxRate, and currency are required when role is CompanyOwner');
       }
       companyId = new Types.ObjectId().toHexString();
       await this.companyModel.create({
@@ -75,11 +75,11 @@ export class AuthService {
       });
     } else {
       if (!dto.companyId) {
-        throw new BadRequestException('companyId is required for Accountant signup');
+        throw new BadRequestException('companyId is required when role is Accountant');
       }
       const companyExists = await this.companyModel.exists({ companyId: dto.companyId });
       if (!companyExists) {
-        throw new BadRequestException('Company not found');
+        throw new BadRequestException('Company with the given companyId was not found');
       }
       companyId = dto.companyId;
     }
