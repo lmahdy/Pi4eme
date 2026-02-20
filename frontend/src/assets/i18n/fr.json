@@ -1,11 +1,32 @@
 {
     "NAV": {
         "SALES": "Ventes",
-        "PURCHASES": "Achats",
+        "PURCHASES": "Achat",
         "REPORT": "Rapport",
         "ASSISTANT": "Insights AI",
         "LOGOUT": "Déconnexion",
+        "ADMIN": "Administration",
         "BRAND_SUB": "Ventes • Inventaire • Insights AI"
+    },
+    "ADMIN": {
+        "TITLE": "Panneau d'administration - Gestion des utilisateurs",
+        "SEARCH_PLACEHOLDER": "Rechercher par nom ou e-mail...",
+        "ALL_ROLES": "Tous les rôles",
+        "ADMIN_ROLE": "Administrateur",
+        "OWNER_ROLE": "Propriétaire d'entreprise",
+        "ACCOUNTANT_ROLE": "Comptable",
+        "COMPANY_ID": "ID d'entreprise",
+        "NAME": "Nom",
+        "EMAIL": "E-mail",
+        "ROLE": "Rôle",
+        "STATUS": "Statut",
+        "ACTIONS": "Actions",
+        "ACTIVATE": "Activer",
+        "DEACTIVATE": "Désactiver",
+        "DELETE": "Supprimer",
+        "DELETE_CONFIRM": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action ne peut pas être annulée.",
+        "DELETE_SUCCESS": "Utilisateur supprimé avec succès.",
+        "DELETE_FAILED": "Échec de la suppression de l'utilisateur."
     },
     "LOGIN": {
         "TITLE": "Connexion",
@@ -14,12 +35,15 @@
         "PASSWORD": "Mot de passe",
         "SUBMIT": "Se connecter",
         "NEW_HERE": "Nouveau ici ?",
-        "CREATE_ACCOUNT": "Créer un compte"
+        "CREATE_ACCOUNT": "Créer un compte",
+        "FAILED": "Échec de la connexion. Vérifiez vos identifiants.",
+        "DEACTIVATED": "Le compte est désactivé. Contactez l'administrateur."
     },
     "SIGNUP": {
         "TITLE": "Créer un compte",
         "SUBTITLE": "Choisissez un rôle, définissez vos identifiants et (pour les propriétaires) définissez les paramètres par défaut de l'entreprise.",
         "EMAIL": "E-mail",
+        "NAME": "Nom complet",
         "PASSWORD": "Mot de passe",
         "ROLE": "Rôle",
         "OWNER": "Propriétaire d'entreprise",

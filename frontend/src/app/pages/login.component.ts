@@ -58,15 +58,18 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
 })
 export class LoginComponent {
-  email = 'owner@demo.com';
-  password = 'Password123!';
+  email = '';
+  password = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
   submit() {
     this.authService.login(this.email, this.password).subscribe({
       next: () => this.router.navigate(['/sales']),
-      error: () => alert('Login failed. Check credentials.'),
+      error: (error) => {
+        const message = error.error?.message || 'Login failed. Check credentials.';
+        alert(message);
+      },
     });
   }
 }

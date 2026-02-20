@@ -20,6 +20,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "companyId", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], User.prototype, "name", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ required: true, unique: true, lowercase: true }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
@@ -31,6 +35,10 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true, enum: roles_enum_1.UserRole }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, default: 'active' }),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ collection: 'users', timestamps: true })
 ], User);

@@ -2,9 +2,11 @@ import { Document } from 'mongoose';
 import { UserRole } from '../roles.enum';
 export declare class User {
     companyId: string;
+    name: string;
     email: string;
     passwordHash: string;
     role: UserRole;
+    status: 'active' | 'inactive';
 }
 export type UserDocument = User & Document;
 export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, Document<unknown, any, User, any, {}> & User & {

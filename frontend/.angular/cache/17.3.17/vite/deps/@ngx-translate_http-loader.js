@@ -1,21 +1,19 @@
 import {
-  TranslateLoader
-} from "./chunk-QIHUHBW7.js";
-import {
   HttpBackend,
   HttpClient
-} from "./chunk-J73MXWRD.js";
-import "./chunk-FFTLV5M2.js";
+} from "./chunk-TGVFEQZS.js";
+import "./chunk-FFY7VSBW.js";
+import {
+  TranslateLoader
+} from "./chunk-RVKK72TE.js";
 import {
   Injectable,
   InjectionToken,
   inject,
   setClassMetadata,
   ɵɵdefineInjectable
-} from "./chunk-F7UY5F47.js";
-import "./chunk-RTBI3O22.js";
-import "./chunk-UMFZCAJV.js";
-import "./chunk-XUJVPDVA.js";
+} from "./chunk-PCGAWVWW.js";
+import "./chunk-E5ECCKE6.js";
 import {
   __spreadValues
 } from "./chunk-WDMUDEB6.js";

@@ -28,10 +28,27 @@ let AuthService = class AuthService {
         this.companyModel = companyModel;
         this.jwtService = jwtService;
     }
+    async onModuleInit() {
+        const adminExists = await this.userModel.exists({ role: roles_enum_1.UserRole.Admin });
+        if (!adminExists) {
+            const passwordHash = await bcrypt.hash('admin123', 10);
+            await this.userModel.create({
+                email: 'admin@bi.platform',
+                name: 'System Admin',
+                passwordHash,
+                role: roles_enum_1.UserRole.Admin,
+                companyId: 'SYSTEM',
+                status: 'active',
+            });
+        }
+    }
     async login(email, password) {
         const user = await this.userModel.findOne({ email: email.toLowerCase() }).exec();
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid email or password');
+        }
+        if (user.status !== 'active') {
+            throw new common_1.UnauthorizedException('Account is deactivated');
         }
         const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) {
@@ -47,9 +64,11 @@ let AuthService = class AuthService {
             access_token: await this.jwtService.signAsync(payload),
             user: {
                 id: user.id,
+                name: user.name,
                 email: user.email,
                 role: user.role,
                 companyId: user.companyId,
+                status: user.status,
             },
         };
     }
@@ -86,9 +105,11 @@ let AuthService = class AuthService {
         const passwordHash = await bcrypt.hash(dto.password, 10);
         const user = await this.userModel.create({
             companyId,
+            name: dto.name,
             email,
             passwordHash,
             role: dto.role,
+            status: 'active',
         });
         const payload = {
             sub: user.id,
@@ -100,9 +121,11 @@ let AuthService = class AuthService {
             access_token: await this.jwtService.signAsync(payload),
             user: {
                 id: user.id,
+                name: user.name,
                 email: user.email,
                 role: user.role,
                 companyId: user.companyId,
+                status: user.status,
             },
         };
     }

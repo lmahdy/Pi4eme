@@ -46,7 +46,7 @@ import {
   registerables,
   registry,
   scales
-} from "./chunk-53AX5HS7.js";
+} from "./chunk-QWSFDIAV.js";
 import "./chunk-WDMUDEB6.js";
 
 // node_modules/chart.js/auto/auto.js

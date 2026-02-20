@@ -8,18 +8,22 @@ export declare class AuthController {
         access_token: string;
         user: {
             id: any;
+            name: string;
             email: string;
             role: import("./roles.enum").UserRole;
             companyId: string;
+            status: "active";
         };
     }>;
     signup(dto: SignupDto): Promise<{
         access_token: string;
         user: {
             id: any;
+            name: string;
             email: string;
             role: import("./roles.enum").UserRole;
             companyId: string;
+            status: "active" | "inactive";
         };
     }>;
 }

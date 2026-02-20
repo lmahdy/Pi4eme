@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 export class ApiService {
   private apiBase = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   uploadSales(file: File) {
     const formData = new FormData();
@@ -53,5 +53,17 @@ export class ApiService {
 
   triggerAgent() {
     return this.http.post(`${this.apiBase}/ai-agent/trigger`, {});
+  }
+
+  getAllUsers() {
+    return this.http.get<any[]>(`${this.apiBase}/users`);
+  }
+
+  updateUserStatus(userId: string, status: 'active' | 'inactive') {
+    return this.http.patch(`${this.apiBase}/users/${userId}/status`, { status });
+  }
+
+  deleteUser(userId: string) {
+    return this.http.delete(`${this.apiBase}/users/${userId}`);
   }
 }

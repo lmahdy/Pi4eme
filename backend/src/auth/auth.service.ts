@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,17 +17,36 @@ export interface JwtPayload {
 }
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(CompanyConfig.name) private companyModel: Model<CompanyConfigDocument>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
+
+  async onModuleInit() {
+    const adminExists = await this.userModel.exists({ role: UserRole.Admin });
+    if (!adminExists) {
+      const passwordHash = await bcrypt.hash('admin123', 10);
+      await this.userModel.create({
+        email: 'admin@bi.platform',
+        name: 'System Admin',
+        passwordHash,
+        role: UserRole.Admin,
+        companyId: 'SYSTEM',
+        status: 'active',
+      });
+    }
+  }
 
   async login(email: string, password: string) {
     const user = await this.userModel.findOne({ email: email.toLowerCase() }).exec();
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('Account is deactivated');
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
@@ -46,9 +65,11 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
       user: {
         id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
         companyId: user.companyId,
+        status: user.status,
       },
     };
   }
@@ -87,9 +108,11 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.userModel.create({
       companyId,
+      name: dto.name,
       email,
       passwordHash,
       role: dto.role,
+      status: 'active',
     });
 
     const payload: JwtPayload = {
@@ -103,9 +126,11 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
       user: {
         id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
         companyId: user.companyId,
+        status: user.status,
       },
     };
   }

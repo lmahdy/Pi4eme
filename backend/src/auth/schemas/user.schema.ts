@@ -7,6 +7,9 @@ export class User {
   @Prop({ required: true })
   companyId: string;
 
+  @Prop({ required: true })
+  name: string;
+
   @Prop({ required: true, unique: true, lowercase: true })
   email: string;
 
@@ -15,6 +18,9 @@ export class User {
 
   @Prop({ required: true, enum: UserRole })
   role: UserRole;
+
+  @Prop({ required: true, default: 'active' })
+  status: 'active' | 'inactive';
 }
 
 export type UserDocument = User & Document;

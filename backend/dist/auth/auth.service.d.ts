@@ -1,3 +1,4 @@
+import { OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { UserDocument } from './schemas/user.schema';
@@ -10,27 +11,32 @@ export interface JwtPayload {
     role: string;
     companyId: string;
 }
-export declare class AuthService {
+export declare class AuthService implements OnModuleInit {
     private userModel;
     private companyModel;
     private jwtService;
     constructor(userModel: Model<UserDocument>, companyModel: Model<CompanyConfigDocument>, jwtService: JwtService);
+    onModuleInit(): Promise<void>;
     login(email: string, password: string): Promise<{
         access_token: string;
         user: {
             id: any;
+            name: string;
             email: string;
             role: UserRole;
             companyId: string;
+            status: "active";
         };
     }>;
     signup(dto: SignupDto): Promise<{
         access_token: string;
         user: {
             id: any;
+            name: string;
             email: string;
             role: UserRole;
             companyId: string;
+            status: "active" | "inactive";
         };
     }>;
 }

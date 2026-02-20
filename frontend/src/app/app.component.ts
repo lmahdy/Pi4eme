@@ -14,6 +14,7 @@ import { LanguageService } from './services/language.service';
 })
 export class AppComponent implements OnInit {
   showNavigation = false;
+  isAdmin$ = this.authService.isAdmin$;
 
   constructor(
     private authService: AuthService,

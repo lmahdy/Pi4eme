@@ -15,6 +15,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       <p>{{ 'SIGNUP.SUBTITLE' | translate }}</p>
 
       <form (ngSubmit)="submit()">
+        <label>{{ 'SIGNUP.NAME' | translate }}</label>
+        <input type="text" [(ngModel)]="name" name="name" required />
+
         <label>{{ 'SIGNUP.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="email" name="email" required />
 
@@ -66,6 +69,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   ],
 })
 export class SignupComponent {
+  name = '';
   email = '';
   password = '';
   role: 'CompanyOwner' | 'Accountant' = 'CompanyOwner';
@@ -84,6 +88,7 @@ export class SignupComponent {
   submit() {
     this.authService
       .signup({
+        name: this.name,
         email: this.email,
         password: this.password,
         role: this.role,

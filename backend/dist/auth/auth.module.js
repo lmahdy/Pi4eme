@@ -13,6 +13,7 @@ const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
 const auth_controller_1 = require("./auth.controller");
+const user_controller_1 = require("./user.controller");
 const auth_service_1 = require("./auth.service");
 const user_schema_1 = require("./schemas/user.schema");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
@@ -38,7 +39,7 @@ exports.AuthModule = AuthModule = __decorate([
                 { name: company_config_schema_1.CompanyConfig.name, schema: company_config_schema_1.CompanyConfigSchema },
             ]),
         ],
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
         exports: [auth_service_1.AuthService, mongoose_1.MongooseModule, jwt_1.JwtModule, passport_1.PassportModule],
     })

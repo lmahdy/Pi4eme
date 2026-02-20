@@ -5,10 +5,13 @@
       <span class="brand-sub">{{ 'NAV.BRAND_SUB' | translate }}</span>
     </div>
     <nav class="nav" *ngIf="showNavigation">
-      <a routerLink="/sales">{{ 'NAV.SALES' | translate }}</a>
-      <a routerLink="/purchases">{{ 'NAV.PURCHASES' | translate }}</a>
-      <a routerLink="/report">{{ 'NAV.REPORT' | translate }}</a>
-      <a routerLink="/assistant">{{ 'NAV.ASSISTANT' | translate }}</a>
+      <ng-container *ngIf="!(isAdmin$ | async)">
+        <a routerLink="/sales">{{ 'NAV.SALES' | translate }}</a>
+        <a routerLink="/purchases">{{ 'NAV.PURCHASES' | translate }}</a>
+        <a routerLink="/report">{{ 'NAV.REPORT' | translate }}</a>
+        <a routerLink="/assistant">{{ 'NAV.ASSISTANT' | translate }}</a>
+      </ng-container>
+      <a routerLink="/admin" *ngIf="isAdmin$ | async">{{ 'NAV.ADMIN' | translate }}</a>
       <a routerLink="/login" (click)="logout()">{{ 'NAV.LOGOUT' | translate }}</a>
     </nav>
     <div class="lang-selector">
