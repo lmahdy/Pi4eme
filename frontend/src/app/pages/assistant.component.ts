@@ -1,35 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../services/api.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-assistant',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="card">
-      <h2>AI Business Assistant</h2>
-      <p>Generate a full business summary and send it by email.</p>
-      <button class="button" (click)="trigger()">Send Summary Email</button>
+      <h2>{{ 'ASSISTANT.TITLE' | translate }}</h2>
+      <p>{{ 'ASSISTANT.SUBTITLE' | translate }}</p>
+      <button class="button" (click)="trigger()">{{ 'ASSISTANT.SEND_EMAIL' | translate }}</button>
       <p *ngIf="message">{{ message }}</p>
     </div>
 
     <div class="grid grid-3">
       <div class="card">
-        <h3>Sales Insight</h3>
-        <p>Best: {{ salesInsight.best_product || 'N/A' }}</p>
-        <p>Worst: {{ salesInsight.worst_product || 'N/A' }}</p>
+        <h3>{{ 'ASSISTANT.SALES_INSIGHT' | translate }}</h3>
+        <p>{{ 'ASSISTANT.BEST' | translate }}: {{ salesInsight.best_product || ( 'COMMON.N_A' | translate ) }}</p>
+        <p>{{ 'ASSISTANT.WORST' | translate }}: {{ salesInsight.worst_product || ( 'COMMON.N_A' | translate ) }}</p>
       </div>
       <div class="card">
-        <h3>Inventory Insight</h3>
-        <p>Item: {{ inventoryInsight.item || 'N/A' }}</p>
-        <p>Risk: {{ inventoryInsight.risk_level || 'N/A' }}</p>
-        <p>Reorder: {{ inventoryInsight.recommended_reorder ?? 'N/A' }}</p>
+        <h3>{{ 'ASSISTANT.INVENTORY_INSIGHT' | translate }}</h3>
+        <p>{{ 'COMMON.ITEM' | translate }}: {{ inventoryInsight.item || ( 'COMMON.N_A' | translate ) }}</p>
+        <p>{{ 'ASSISTANT.RISK' | translate }}: {{ inventoryInsight.risk_level || ( 'COMMON.N_A' | translate ) }}</p>
+        <p>{{ 'ASSISTANT.REORDER' | translate }}: {{ inventoryInsight.recommended_reorder ?? ( 'COMMON.N_A' | translate ) }}</p>
       </div>
       <div class="card">
-        <h3>Health Insight</h3>
-        <p>Score: {{ reportInsight.health_score ?? 'N/A' }}</p>
-        <p>Status: {{ reportInsight.status || 'N/A' }}</p>
+        <h3>{{ 'ASSISTANT.HEALTH_INSIGHT' | translate }}</h3>
+        <p>{{ 'ASSISTANT.SCORE' | translate }}: {{ reportInsight.health_score ?? ( 'COMMON.N_A' | translate ) }}</p>
+        <p>{{ 'ASSISTANT.STATUS' | translate }}: {{ reportInsight.status || ( 'COMMON.N_A' | translate ) }}</p>
       </div>
     </div>
   `,
@@ -40,7 +41,7 @@ export class AssistantComponent implements OnInit {
   inventoryInsight: any = {};
   reportInsight: any = {};
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private translate: TranslateService) { }
 
   ngOnInit() {
     this.loadInsights();
@@ -64,8 +65,8 @@ export class AssistantComponent implements OnInit {
 
   trigger() {
     this.api.triggerAgent().subscribe({
-      next: () => (this.message = 'Email sent successfully.'),
-      error: () => (this.message = 'Failed to send email. Check SMTP configuration.'),
+      next: () => (this.message = this.translate.instant('ASSISTANT.SUCCESS')),
+      error: () => (this.message = this.translate.instant('ASSISTANT.FAILED')),
     });
   }
 }

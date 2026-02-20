@@ -2,39 +2,40 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CsvUploadComponent } from '../components/csv-upload.component';
 import { ApiService } from '../services/api.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchases-dashboard',
   standalone: true,
-  imports: [CommonModule, CsvUploadComponent],
+  imports: [CommonModule, CsvUploadComponent, TranslateModule],
   template: `
     <div class="grid grid-2">
       <div class="card">
-        <h2>Upload Purchases CSV</h2>
+        <h2>{{ 'PURCHASES.UPLOAD_CSV' | translate }}</h2>
         <app-csv-upload (fileSelected)="upload($event)"></app-csv-upload>
         <p *ngIf="message">{{ message }}</p>
       </div>
       <div class="card">
-        <h2>Inventory Alerts</h2>
-        <div *ngIf="alerts.length === 0">No high-risk inventory alerts.</div>
+        <h2>{{ 'PURCHASES.ALERTS' | translate }}</h2>
+        <div *ngIf="alerts.length === 0">{{ 'PURCHASES.NO_ALERTS' | translate }}</div>
         <div *ngFor="let alert of alerts" class="alert">
           <span class="badge badge-high">High</span>
-          {{ alert.item }} - stockout in {{ alert.predicted_stockout_days }} days
+          {{ alert.item }} - {{ 'PURCHASES.STOCKOUT_IN' | translate }} {{ alert.predicted_stockout_days }} {{ 'PURCHASES.DAYS' | translate }}
         </div>
       </div>
     </div>
 
     <div class="grid grid-2">
       <div class="card">
-        <h3>Recent Purchases</h3>
+        <h3>{{ 'PURCHASES.RECENT' | translate }}</h3>
         <table class="table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Item</th>
-              <th>Type</th>
-              <th>Qty</th>
-              <th>Total</th>
+              <th>{{ 'COMMON.DATE' | translate }}</th>
+              <th>{{ 'COMMON.ITEM' | translate }}</th>
+              <th>{{ 'COMMON.TYPE' | translate }}</th>
+              <th>{{ 'COMMON.QTY' | translate }}</th>
+              <th>{{ 'COMMON.TOTAL' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -49,13 +50,13 @@ import { ApiService } from '../services/api.service';
         </table>
       </div>
       <div class="card">
-        <h3>Stock Table</h3>
+        <h3>{{ 'PURCHASES.STOCK_TABLE' | translate }}</h3>
         <table class="table">
           <thead>
             <tr>
-              <th>Item</th>
-              <th>Current Stock</th>
-              <th>Updated</th>
+              <th>{{ 'COMMON.ITEM' | translate }}</th>
+              <th>{{ 'PURCHASES.STOCK' | translate }}</th>
+              <th>{{ 'PURCHASES.UPDATED' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -83,7 +84,7 @@ export class PurchasesDashboardComponent implements OnInit {
   stock: any[] = [];
   alerts: any[] = [];
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private translate: TranslateService) { }
 
   ngOnInit() {
     this.loadData();
@@ -92,11 +93,11 @@ export class PurchasesDashboardComponent implements OnInit {
   upload(file: File) {
     this.api.uploadPurchases(file).subscribe({
       next: () => {
-        this.message = 'Purchases CSV uploaded successfully.';
+        this.message = this.translate.instant('PURCHASES.SUCCESS');
         this.loadData();
       },
       error: (err) => {
-        this.message = err?.error?.message || 'Upload failed.';
+        this.message = err?.error?.message || this.translate.instant('SALES.FAILED');
       },
     });
   }

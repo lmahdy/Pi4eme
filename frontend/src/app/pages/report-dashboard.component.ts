@@ -1,46 +1,47 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../services/api.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="grid grid-3">
       <div class="card">
-        <h3>Revenue</h3>
+        <h3>{{ 'REPORT.REVENUE' | translate }}</h3>
         <p>{{ formatCurrency(kpis.revenue) }}</p>
       </div>
       <div class="card">
-        <h3>Costs</h3>
+        <h3>{{ 'REPORT.COSTS' | translate }}</h3>
         <p>{{ formatCurrency(kpis.costs) }}</p>
       </div>
       <div class="card">
-        <h3>Profit</h3>
+        <h3>{{ 'REPORT.PROFIT' | translate }}</h3>
         <p>{{ formatCurrency(kpis.profit) }}</p>
       </div>
       <div class="card">
-        <h3>Taxes</h3>
+        <h3>{{ 'REPORT.TAXES' | translate }}</h3>
         <p>{{ formatCurrency(kpis.taxes) }}</p>
       </div>
       <div class="card">
-        <h3>Revenue Growth</h3>
+        <h3>{{ 'REPORT.REVENUE_GROWTH' | translate }}</h3>
         <p>{{ kpis.revenueGrowth?.toFixed(2) }}%</p>
       </div>
       <div class="card">
-        <h3>Sales Volatility</h3>
+        <h3>{{ 'REPORT.VOLATILITY' | translate }}</h3>
         <p>{{ kpis.salesVolatility?.toFixed(2) }}%</p>
       </div>
     </div>
 
     <div class="card">
-      <h2>Company Health</h2>
+      <h2>{{ 'REPORT.COMPANY_HEALTH' | translate }}</h2>
       <div class="health">
         <div class="health-score">{{ reportAi.health_score || 0 }}</div>
-        <div class="health-status">{{ reportAi.status || 'N/A' }}</div>
+        <div class="health-status">{{ reportAi.status || ( 'COMMON.N_A' | translate ) }}</div>
       </div>
-      <p>{{ reportAi.main_reason || 'No insight yet.' }}</p>
+      <p>{{ reportAi.main_reason || ( 'REPORT.NO_INSIGHT' | translate ) }}</p>
       <div class="gauge">
         <div class="gauge-fill" [style.width.%]="reportAi.health_score || 0"></div>
       </div>
@@ -78,7 +79,7 @@ export class ReportDashboardComponent implements OnInit {
   kpis: any = { currency: 'USD', revenue: 0, costs: 0, profit: 0, taxes: 0 };
   reportAi: any = {};
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit() {
     this.loadData();

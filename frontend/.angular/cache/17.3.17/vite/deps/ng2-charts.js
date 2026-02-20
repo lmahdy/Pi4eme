@@ -1,9 +1,4 @@
 import {
-  Chart,
-  defaults,
-  registerables
-} from "./chunk-53AX5HS7.js";
-import {
   Directive,
   ElementRef,
   EventEmitter,
@@ -21,11 +16,18 @@ import {
   ɵɵdefineNgModule,
   ɵɵdirectiveInject,
   ɵɵinject
-} from "./chunk-LZRSQX6V.js";
+} from "./chunk-F7UY5F47.js";
+import "./chunk-RTBI3O22.js";
+import {
+  Chart,
+  defaults,
+  registerables
+} from "./chunk-53AX5HS7.js";
+import "./chunk-UMFZCAJV.js";
 import {
   BehaviorSubject,
   distinctUntilChanged
-} from "./chunk-MI33HGZS.js";
+} from "./chunk-XUJVPDVA.js";
 import "./chunk-WDMUDEB6.js";
 
 // node_modules/lodash-es/_freeGlobal.js

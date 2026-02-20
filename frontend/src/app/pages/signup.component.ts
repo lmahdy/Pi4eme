@@ -3,51 +3,55 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
     <div class="card signup-card">
-      <h2>Create Account</h2>
-      <p>Choose role, set credentials, and (for owners) define company defaults.</p>
+      <h2>{{ 'SIGNUP.TITLE' | translate }}</h2>
+      <p>{{ 'SIGNUP.SUBTITLE' | translate }}</p>
 
       <form (ngSubmit)="submit()">
-        <label>Email</label>
+        <label>{{ 'SIGNUP.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="email" name="email" required />
 
-        <label>Password</label>
+        <label>{{ 'SIGNUP.PASSWORD' | translate }}</label>
         <input type="password" [(ngModel)]="password" name="password" minlength="8" required />
 
-        <label>Role</label>
+        <label>{{ 'SIGNUP.ROLE' | translate }}</label>
         <div class="role-row">
-          <label><input type="radio" name="role" [(ngModel)]="role" value="CompanyOwner" /> Company Owner</label>
-          <label><input type="radio" name="role" [(ngModel)]="role" value="Accountant" /> Accountant</label>
+          <label><input type="radio" name="role" [(ngModel)]="role" value="CompanyOwner" /> {{ 'SIGNUP.OWNER' | translate }}</label>
+          <label><input type="radio" name="role" [(ngModel)]="role" value="Accountant" /> {{ 'SIGNUP.ACCOUNTANT' | translate }}</label>
         </div>
 
         <ng-container *ngIf="role === 'CompanyOwner'">
-          <label>Company Name</label>
+          <label>{{ 'SIGNUP.COMPANY_NAME' | translate }}</label>
           <input type="text" [(ngModel)]="companyName" name="companyName" required />
 
-          <label>Tax Rate (%)</label>
+          <label>{{ 'SIGNUP.TAX_RATE' | translate }}</label>
           <input type="number" [(ngModel)]="taxRate" name="taxRate" min="0" step="0.01" required />
 
-          <label>Currency (e.g. USD)</label>
+          <label>{{ 'SIGNUP.CURRENCY' | translate }}</label>
           <input type="text" [(ngModel)]="currency" name="currency" required />
 
-          <label>Notification Email</label>
+          <label>{{ 'SIGNUP.NOTIF_EMAIL' | translate }}</label>
           <input type="email" [(ngModel)]="notificationEmail" name="notificationEmail" />
         </ng-container>
 
         <ng-container *ngIf="role === 'Accountant'">
-          <label>Existing Company ID</label>
+          <label>{{ 'SIGNUP.COMPANY_ID' | translate }}</label>
           <input type="text" [(ngModel)]="companyId" name="companyId" required />
-          <p class="hint">Ask the owner for the company ID (see their /company/config response).</p>
+          <p class="hint">{{ 'SIGNUP.ID_HINT' | translate }}</p>
         </ng-container>
 
-        <button class="button" type="submit">Sign Up</button>
-        <p class="hint">Already have an account? <a routerLink="/login">Login</a></p>
+        <button class="button" type="submit">{{ 'SIGNUP.SUBMIT' | translate }}</button>
+        <p class="hint">
+          {{ 'SIGNUP.ALREADY_HAVE' | translate }} 
+          <a routerLink="/login">{{ 'SIGNUP.LOGIN' | translate }}</a>
+        </p>
       </form>
     </div>
   `,
@@ -71,7 +75,11 @@ export class SignupComponent {
   notificationEmail = '';
   companyId = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private translate: TranslateService
+  ) { }
 
   submit() {
     this.authService
@@ -87,7 +95,7 @@ export class SignupComponent {
       })
       .subscribe({
         next: () => this.router.navigate(['/sales']),
-        error: (err) => alert(err?.error?.message || 'Signup failed'),
+        error: (err) => alert(err?.error?.message || this.translate.instant('SIGNUP.FAILED')),
       });
   }
 }

@@ -1,0 +1,98 @@
+{
+    "NAV": {
+        "SALES": "Sales",
+        "PURCHASES": "Purchases",
+        "REPORT": "Report",
+        "ASSISTANT": "Insights",
+        "LOGOUT": "Logout",
+        "BRAND_SUB": "Sales • Inventory • AI Insights"
+    },
+    "LOGIN": {
+        "TITLE": "Login",
+        "SUBTITLE": "Use your company credentials to access the dashboards.",
+        "EMAIL": "Email",
+        "PASSWORD": "Password",
+        "SUBMIT": "Sign In",
+        "NEW_HERE": "New here?",
+        "CREATE_ACCOUNT": "Create an account"
+    },
+    "SIGNUP": {
+        "TITLE": "Create Account",
+        "SUBTITLE": "Choose role, set credentials, and (for owners) define company defaults.",
+        "EMAIL": "Email",
+        "PASSWORD": "Password",
+        "ROLE": "Role",
+        "OWNER": "Company Owner",
+        "ACCOUNTANT": "Accountant",
+        "COMPANY_NAME": "Company Name",
+        "TAX_RATE": "Tax Rate (%)",
+        "CURRENCY": "Currency (e.g. USD)",
+        "NOTIF_EMAIL": "Notification Email",
+        "COMPANY_ID": "Existing Company ID",
+        "ID_HINT": "Ask the owner for the company ID (see their /company/config response).",
+        "SUBMIT": "Sign Up",
+        "ALREADY_HAVE": "Already have an account?",
+        "LOGIN": "Login",
+        "FAILED": "Signup failed"
+    },
+    "COMMON": {
+        "LANGUAGE": "Language",
+        "ENGLISH": "English",
+        "FRENCH": "Français",
+        "ARABIC": "العربية",
+        "DATE": "Date",
+        "ITEM": "Item",
+        "TYPE": "Type",
+        "QTY": "Qty",
+        "TOTAL": "Total",
+        "N_A": "N/A"
+    },
+    "SALES": {
+        "UPLOAD_CSV": "Upload Sales CSV",
+        "AI_INSIGHTS": "AI Insights",
+        "BEST_PRODUCT": "Best Product",
+        "WORST_PRODUCT": "Worst Product",
+        "REVENUE_TIME": "Revenue Over Time",
+        "REVENUE_PRODUCT": "Revenue By Product",
+        "SUCCESS": "Sales CSV uploaded successfully.",
+        "FAILED": "Upload failed."
+    },
+    "PURCHASES": {
+        "UPLOAD_CSV": "Upload Purchases CSV",
+        "ALERTS": "Inventory Alerts",
+        "NO_ALERTS": "No high-risk inventory alerts.",
+        "STOCKOUT_IN": "stockout in",
+        "DAYS": "days",
+        "RECENT": "Recent Purchases",
+        "STOCK_TABLE": "Stock Table",
+        "STOCK": "Current Stock",
+        "UPDATED": "Updated",
+        "SUCCESS": "Purchases CSV uploaded successfully."
+    },
+    "REPORT": {
+        "REVENUE": "Revenue",
+        "COSTS": "Costs",
+        "PROFIT": "Profit",
+        "TAXES": "Taxes",
+        "REVENUE_GROWTH": "Revenue Growth",
+        "VOLATILITY": "Sales Volatility",
+        "COMPANY_HEALTH": "Company Health",
+        "NO_INSIGHT": "No insight yet."
+    },
+    "ASSISTANT": {
+        "TITLE": "Business Assistant",
+        "SUBTITLE": "Generate a full business summary and send it by email.",
+        "SEND_EMAIL": "Send Summary Email",
+        "SUCCESS": "Email sent successfully.",
+        "FAILED": "Failed to send email. Check SMTP configuration.",
+        "SALES_INSIGHT": "Sales Insight",
+        "BEST": "Best",
+        "WORST": "Worst",
+        "INVENTORY_INSIGHT": "Inventory Insight",
+        "RISK": "Risk",
+        "REORDER": "Reorder",
+        "HEALTH_INSIGHT": "Health Insight",
+        "SCORE": "Score",
+        "STATUS": "Status"
+    }
+}

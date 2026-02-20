@@ -5,25 +5,29 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
     <div class="card login-card">
-      <h2>Login</h2>
-      <p>Use your company credentials to access the dashboards.</p>
+      <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
+      <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
       <form (ngSubmit)="submit()">
-        <label>Email</label>
+        <label>{{ 'LOGIN.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="email" name="email" required />
 
-        <label>Password</label>
+        <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
         <input type="password" [(ngModel)]="password" name="password" required />
 
-        <button class="button" type="submit">Sign In</button>
+        <button class="button" type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
       </form>
-      <p class="hint">Default owner: owner&#64;demo.com / Password123!</p>
-      <p class="hint">New here? <a routerLink="/signup">Create an account</a></p>
+      <p class="hint">
+        {{ 'LOGIN.NEW_HERE' | translate }} 
+        <a routerLink="/signup">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</a>
+      </p>
     </div>
   `,
   styles: [

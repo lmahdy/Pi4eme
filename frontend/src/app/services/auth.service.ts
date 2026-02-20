@@ -1,13 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenKey = 'bi_token';
   private apiBase = 'http://localhost:3000';
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  isLoggedIn$ = this.loggedIn.asObservable();
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem(this.tokenKey);
+  }
 
   login(email: string, password: string) {
     return this.http
@@ -15,6 +22,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           localStorage.setItem(this.tokenKey, response.access_token);
+          this.loggedIn.next(true);
         }),
       );
   }
@@ -25,22 +33,17 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(this.tokenKey);
+    this.loggedIn.next(false);
   }
 
-  signup(payload: {
-    email: string;
-    password: string;
-    role: 'CompanyOwner' | 'Accountant';
-    companyName?: string;
-    taxRate?: number;
-    currency?: string;
-    notificationEmail?: string;
-    companyId?: string;
-  }) {
+  signup(payload: any) {
     return this.http
       .post<{ access_token: string }>(`${this.apiBase}/auth/signup`, payload)
       .pipe(
-        tap((response) => localStorage.setItem(this.tokenKey, response.access_token)),
+        tap((response) => {
+          localStorage.setItem(this.tokenKey, response.access_token);
+          this.loggedIn.next(true);
+        })
       );
   }
 }

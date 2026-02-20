@@ -4,32 +4,33 @@ import { NgChartsModule } from 'ng2-charts';
 import { ChartData } from 'chart.js';
 import { CsvUploadComponent } from '../components/csv-upload.component';
 import { ApiService } from '../services/api.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sales-dashboard',
   standalone: true,
-  imports: [CommonModule, CsvUploadComponent, NgChartsModule],
+  imports: [CommonModule, CsvUploadComponent, NgChartsModule, TranslateModule],
   template: `
     <div class="grid grid-2">
       <div class="card">
-        <h2>Upload Sales CSV</h2>
+        <h2>{{ 'SALES.UPLOAD_CSV' | translate }}</h2>
         <app-csv-upload (fileSelected)="upload($event)"></app-csv-upload>
         <p *ngIf="message">{{ message }}</p>
       </div>
       <div class="card">
-        <h2>AI Insights</h2>
-        <p><strong>Best Product:</strong> {{ bestProduct }}</p>
-        <p><strong>Worst Product:</strong> {{ worstProduct }}</p>
+        <h2>{{ 'SALES.AI_INSIGHTS' | translate }}</h2>
+        <p><strong>{{ 'SALES.BEST_PRODUCT' | translate }}:</strong> {{ bestProduct }}</p>
+        <p><strong>{{ 'SALES.WORST_PRODUCT' | translate }}:</strong> {{ worstProduct }}</p>
       </div>
     </div>
 
     <div class="grid grid-2">
       <div class="card">
-        <h3>Revenue Over Time</h3>
+        <h3>{{ 'SALES.REVENUE_TIME' | translate }}</h3>
         <canvas baseChart [data]="lineChartData" chartType="line"></canvas>
       </div>
       <div class="card">
-        <h3>Revenue By Product</h3>
+        <h3>{{ 'SALES.REVENUE_PRODUCT' | translate }}</h3>
         <canvas baseChart [data]="barChartData" chartType="bar"></canvas>
       </div>
     </div>
@@ -50,7 +51,7 @@ export class SalesDashboardComponent implements OnInit {
     datasets: [{ data: [], label: 'Revenue', backgroundColor: '#10b981' }],
   };
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private translate: TranslateService) { }
 
   ngOnInit() {
     this.loadCharts();
@@ -60,12 +61,12 @@ export class SalesDashboardComponent implements OnInit {
   upload(file: File) {
     this.api.uploadSales(file).subscribe({
       next: () => {
-        this.message = 'Sales CSV uploaded successfully.';
+        this.message = this.translate.instant('SALES.SUCCESS');
         this.loadCharts();
         this.loadInsights();
       },
       error: (err) => {
-        this.message = err?.error?.message || 'Upload failed.';
+        this.message = err?.error?.message || this.translate.instant('SALES.FAILED');
       },
     });
   }

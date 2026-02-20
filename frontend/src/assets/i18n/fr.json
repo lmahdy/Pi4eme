@@ -1,0 +1,98 @@
+{
+    "NAV": {
+        "SALES": "Ventes",
+        "PURCHASES": "Achats",
+        "REPORT": "Rapport",
+        "ASSISTANT": "Insights AI",
+        "LOGOUT": "Déconnexion",
+        "BRAND_SUB": "Ventes • Inventaire • Insights AI"
+    },
+    "LOGIN": {
+        "TITLE": "Connexion",
+        "SUBTITLE": "Utilisez vos identifiants d'entreprise pour accéder aux tableaux de bord.",
+        "EMAIL": "E-mail",
+        "PASSWORD": "Mot de passe",
+        "SUBMIT": "Se connecter",
+        "NEW_HERE": "Nouveau ici ?",
+        "CREATE_ACCOUNT": "Créer un compte"
+    },
+    "SIGNUP": {
+        "TITLE": "Créer un compte",
+        "SUBTITLE": "Choisissez un rôle, définissez vos identifiants et (pour les propriétaires) définissez les paramètres par défaut de l'entreprise.",
+        "EMAIL": "E-mail",
+        "PASSWORD": "Mot de passe",
+        "ROLE": "Rôle",
+        "OWNER": "Propriétaire d'entreprise",
+        "ACCOUNTANT": "Comptable",
+        "COMPANY_NAME": "Nom de l'entreprise",
+        "TAX_RATE": "Taux d'imposition (%)",
+        "CURRENCY": "Devise (ex: EUR)",
+        "NOTIF_EMAIL": "E-mail de notification",
+        "COMPANY_ID": "ID d'entreprise existant",
+        "ID_HINT": "Demandez au propriétaire l'ID de l'entreprise (voir leur réponse /company/config).",
+        "SUBMIT": "S'inscrire",
+        "ALREADY_HAVE": "Vous avez déjà un compte ?",
+        "LOGIN": "Connexion",
+        "FAILED": "L'inscription a échoué"
+    },
+    "COMMON": {
+        "LANGUAGE": "Langue",
+        "ENGLISH": "Anglais",
+        "FRENCH": "Français",
+        "ARABIC": "العربية",
+        "DATE": "Date",
+        "ITEM": "Article",
+        "TYPE": "Type",
+        "QTY": "Qté",
+        "TOTAL": "Total",
+        "N_A": "N/A"
+    },
+    "SALES": {
+        "UPLOAD_CSV": "Charger le CSV des Ventes",
+        "AI_INSIGHTS": "Insights AI",
+        "BEST_PRODUCT": "Meilleur Produit",
+        "WORST_PRODUCT": "Pire Produit",
+        "REVENUE_TIME": "Chiffre d'affaires au fil du temps",
+        "REVENUE_PRODUCT": "Chiffre d'affaires par produit",
+        "SUCCESS": "CSV des ventes chargé avec succès.",
+        "FAILED": "L'envoi a échoué."
+    },
+    "PURCHASES": {
+        "UPLOAD_CSV": "Charger le CSV des Achats",
+        "ALERTS": "Alertes d'inventaire",
+        "NO_ALERTS": "Pas d'alertes d'inventaire à haut risque.",
+        "STOCKOUT_IN": "rupture de stock dans",
+        "DAYS": "jours",
+        "RECENT": "Achats récents",
+        "STOCK_TABLE": "Tableau des stocks",
+        "STOCK": "Stock actuel",
+        "UPDATED": "Mis à jour",
+        "SUCCESS": "CSV des achats chargé avec succès."
+    },
+    "REPORT": {
+        "REVENUE": "Revenu",
+        "COSTS": "Coûts",
+        "PROFIT": "Profit",
+        "TAXES": "Impôts",
+        "REVENUE_GROWTH": "Croissance du revenu",
+        "VOLATILITY": "Volatilité des ventes",
+        "COMPANY_HEALTH": "Santé de l'entreprise",
+        "NO_INSIGHT": "Pas encore d'insights."
+    },
+    "ASSISTANT": {
+        "TITLE": "Assistant Business",
+        "SUBTITLE": "Générez un résumé complet de l'entreprise et envoyez-le par e-mail.",
+        "SEND_EMAIL": "Envoyer le résumé par e-mail",
+        "SUCCESS": "E-mail envoyé avec succès.",
+        "FAILED": "Échec de l'envoi de l'e-mail. Vérifiez la configuration SMTP.",
+        "SALES_INSIGHT": "Insights Ventes",
+        "BEST": "Meilleur",
+        "WORST": "Pire",
+        "INVENTORY_INSIGHT": "Insights Inventaire",
+        "RISK": "Risque",
+        "REORDER": "Réapprovisionnement",
+        "HEALTH_INSIGHT": "Insights Santé",
+        "SCORE": "Score",
+        "STATUS": "Statut"
+    }
+}

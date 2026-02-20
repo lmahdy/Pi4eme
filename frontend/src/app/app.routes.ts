@@ -6,12 +6,15 @@ import { PurchasesDashboardComponent } from './pages/purchases-dashboard.compone
 import { ReportDashboardComponent } from './pages/report-dashboard.component';
 import { AssistantComponent } from './pages/assistant.component';
 
+import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
-  { path: 'sales', component: SalesDashboardComponent },
-  { path: 'purchases', component: PurchasesDashboardComponent },
-  { path: 'report', component: ReportDashboardComponent },
-  { path: 'assistant', component: AssistantComponent },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'signup', component: SignupComponent, canActivate: [guestGuard] },
+  { path: 'sales', component: SalesDashboardComponent, canActivate: [authGuard] },
+  { path: 'purchases', component: PurchasesDashboardComponent, canActivate: [authGuard] },
+  { path: 'report', component: ReportDashboardComponent, canActivate: [authGuard] },
+  { path: 'assistant', component: AssistantComponent, canActivate: [authGuard] },
 ];
