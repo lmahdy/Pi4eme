@@ -134,4 +134,52 @@ export class AuthService implements OnModuleInit {
       },
     };
   }
+  async findOrCreateGithubUser(profile: any) {
+    const email = profile.emails[0].value.toLowerCase();
+    const name = profile.displayName || profile.username;
+  
+    let user = await this.userModel.findOne({ email });
+    if (user) return user;
+  
+    const companyId = new Types.ObjectId().toHexString();
+    await this.companyModel.create({
+      companyId,
+      companyName: `${name}'s Company`,
+      taxRate: 0,
+      currency: 'USD',
+      email,
+    });
+  
+    user = await this.userModel.create({
+      email,
+      name,
+      passwordHash: 'GITHUB_AUTH',
+      role: UserRole.CompanyOwner,
+      companyId,
+      status: 'active',
+    });
+  
+    return user;
+  }
+  
+  async loginGithubUser(user: any) {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      companyId: user.companyId,
+    };
+  
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        companyId: user.companyId,
+        status: user.status,
+      },
+    };
+  }
 }

@@ -28,6 +28,10 @@ import { TranslateModule } from '@ngx-translate/core';
         {{ 'LOGIN.NEW_HERE' | translate }} 
         <a routerLink="/signup">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</a>
       </p>
+
+      <a href="http://localhost:3000/auth/github">
+  <button type="button">Login with GitHub</button>
+</a>
     </div>
   `,
   styles: [

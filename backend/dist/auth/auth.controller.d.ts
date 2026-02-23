@@ -26,4 +26,6 @@ export declare class AuthController {
             status: "active" | "inactive";
         };
     }>;
+    githubLogin(): void;
+    githubCallback(req: any, res: any): Promise<void>;
 }
