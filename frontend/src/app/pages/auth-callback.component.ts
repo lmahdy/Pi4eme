@@ -16,7 +16,7 @@ export class AuthCallbackComponent implements OnInit {
     console.log('Token received:', token); // ← add this
     if (token) {
       localStorage.setItem('bi_token', token);
-      this.router.navigate(['sales']);
+      window.location.href = 'sales';
     } else {
       this.router.navigate(['/login']);
     }
