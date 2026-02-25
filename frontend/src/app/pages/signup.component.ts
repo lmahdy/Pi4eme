@@ -11,10 +11,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
     <div class="card signup-card">
+    <div *ngIf="submitted" class="success-box">
+  ✅ Account created! Please check your email to verify your account before logging in.
+</div>
+
       <h2>{{ 'SIGNUP.TITLE' | translate }}</h2>
       <p>{{ 'SIGNUP.SUBTITLE' | translate }}</p>
 
-      <form (ngSubmit)="submit()">
+      <form *ngIf="!submitted" (ngSubmit)="submit()">
         <label>{{ 'SIGNUP.NAME' | translate }}</label>
         <input type="text" [(ngModel)]="name" name="name" required />
 
@@ -65,7 +69,18 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       input { padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; }
       .role-row { display: flex; gap: 12px; }
       .hint { font-size: 12px; color: #6b7280; }
+    
+      .success-box {
+  background-color: #d1fae5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
     `,
+    
   ],
 })
 export class SignupComponent {
@@ -78,6 +93,7 @@ export class SignupComponent {
   currency = 'USD';
   notificationEmail = '';
   companyId = '';
+  submitted = false;
 
   constructor(
     private authService: AuthService,
@@ -99,7 +115,7 @@ export class SignupComponent {
         companyId: this.role === 'Accountant' ? this.companyId : undefined,
       })
       .subscribe({
-        next: () => this.router.navigate(['/sales']),
+        next: () => this.submitted = true, // ← show success message
         error: (err) => alert(err?.error?.message || this.translate.instant('SIGNUP.FAILED')),
       });
   }

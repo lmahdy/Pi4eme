@@ -55,12 +55,10 @@ export class AuthService {
 
   signup(payload: any) {
     return this.http
-      .post<{ access_token: string }>(`${this.apiBase}/auth/signup`, payload)
+      .post<{ message: string }>(`${this.apiBase}/auth/signup`, payload)
       .pipe(
-        tap((response) => {
-          localStorage.setItem(this.tokenKey, response.access_token);
-          this.loggedIn.next(true);
-          this.currentUserRole.next(this.getRoleFromToken());
+        tap(() => {
+          // no token saved - user must verify email first
         })
       );
   }

@@ -22,11 +22,14 @@ const user_schema_1 = require("./schemas/user.schema");
 const roles_enum_1 = require("./roles.enum");
 const company_config_schema_1 = require("../company/schemas/company-config.schema");
 const mongoose_3 = require("mongoose");
+const mail_service_1 = require("../mail/mail.service");
+const crypto = require("crypto");
 let AuthService = class AuthService {
-    constructor(userModel, companyModel, jwtService) {
+    constructor(userModel, companyModel, jwtService, mailService) {
         this.userModel = userModel;
         this.companyModel = companyModel;
         this.jwtService = jwtService;
+        this.mailService = mailService;
     }
     async onModuleInit() {
         const adminExists = await this.userModel.exists({ role: roles_enum_1.UserRole.Admin });
@@ -49,6 +52,9 @@ let AuthService = class AuthService {
         }
         if (user.status !== 'active') {
             throw new common_1.UnauthorizedException('Account is deactivated');
+        }
+        if (!user.isEmailVerified && user.passwordHash !== 'GITHUB_AUTH') {
+            throw new common_1.UnauthorizedException('Please verify your email before logging in');
         }
         const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) {
@@ -103,6 +109,7 @@ let AuthService = class AuthService {
             companyId = dto.companyId;
         }
         const passwordHash = await bcrypt.hash(dto.password, 10);
+        const verificationToken = crypto.randomBytes(32).toString('hex');
         const user = await this.userModel.create({
             companyId,
             name: dto.name,
@@ -110,23 +117,12 @@ let AuthService = class AuthService {
             passwordHash,
             role: dto.role,
             status: 'active',
+            isEmailVerified: false,
+            emailVerificationToken: verificationToken,
         });
-        const payload = {
-            sub: user.id,
-            email: user.email,
-            role: user.role,
-            companyId: user.companyId,
-        };
+        await this.mailService.sendVerificationEmail(email, verificationToken);
         return {
-            access_token: await this.jwtService.signAsync(payload),
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                companyId: user.companyId,
-                status: user.status,
-            },
+            message: 'Account created! Please check your email to verify your account.',
         };
     }
     async findOrCreateGithubUser(profile) {
@@ -172,6 +168,16 @@ let AuthService = class AuthService {
             },
         };
     }
+    async verifyEmail(token) {
+        const user = await this.userModel.findOne({ emailVerificationToken: token });
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid or expired verification token');
+        }
+        user.isEmailVerified = true;
+        user.emailVerificationToken = null;
+        await user.save();
+        return { message: 'Email verified successfully' };
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
@@ -180,6 +186,7 @@ exports.AuthService = AuthService = __decorate([
     __param(1, (0, mongoose_1.InjectModel)(company_config_schema_1.CompanyConfig.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        mail_service_1.MailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

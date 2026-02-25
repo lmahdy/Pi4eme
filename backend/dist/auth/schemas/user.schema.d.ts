@@ -7,6 +7,8 @@ export declare class User {
     passwordHash: string;
     role: UserRole;
     status: 'active' | 'inactive';
+    isEmailVerified: boolean;
+    emailVerificationToken: string | null;
 }
 export type UserDocument = User & Document;
 export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, Document<unknown, any, User, any, {}> & User & {

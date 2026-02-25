@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,9 @@ import { TranslateModule } from '@ngx-translate/core';
     <div class="card login-card">
       <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
       <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
+      <div *ngIf="verifiedMessage" class="verified-banner">
+        ✅ Email verified successfully! You can now log in.
+      </div>
       <form (ngSubmit)="submit()">
         <label>{{ 'LOGIN.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="email" name="email" required />
@@ -73,6 +78,17 @@ import { TranslateModule } from '@ngx-translate/core';
         margin-top: 12px;
       }
 
+      .verified-banner {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
       .github-btn {
         display: flex;
         align-items: center;
@@ -98,10 +114,14 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
 })
 export class LoginComponent {
+  verifiedMessage = false;
   email = '';
   password = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {
+    this.verifiedMessage = this.route.snapshot.queryParams['verified'] === 'true';
+  }
+
 
   submit() {
     this.authService.login(this.email, this.password).subscribe({

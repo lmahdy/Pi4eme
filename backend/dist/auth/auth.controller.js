@@ -34,6 +34,10 @@ let AuthController = class AuthController {
         const token = result.access_token;
         res.redirect(`http://localhost:4200/auth/callback?token=${token}`);
     }
+    async verifyEmail(token, res) {
+        await this.authService.verifyEmail(token);
+        res.redirect('http://localhost:4200/login?verified=true');
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -66,6 +70,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "githubCallback", null);
+__decorate([
+    (0, common_1.Get)('verify-email'),
+    __param(0, (0, common_1.Query)('token')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyEmail", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

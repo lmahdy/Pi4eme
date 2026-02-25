@@ -21,6 +21,12 @@ export class User {
 
   @Prop({ required: true, default: 'active' })
   status: 'active' | 'inactive';
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
+
+  @Prop({ type: String, default: null })
+  emailVerificationToken: string | null;
 }
 
 export type UserDocument = User & Document;

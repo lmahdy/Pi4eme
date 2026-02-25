@@ -19,6 +19,7 @@ const user_schema_1 = require("./schemas/user.schema");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const company_config_schema_1 = require("../company/schemas/company-config.schema");
 const github_strategy_1 = require("./strategies/github.strategy");
+const mail_module_1 = require("../mail/mail.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -27,6 +28,7 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             config_1.ConfigModule,
             passport_1.PassportModule,
+            mail_module_1.MailModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],

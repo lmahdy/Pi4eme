@@ -16,16 +16,9 @@ export declare class AuthController {
         };
     }>;
     signup(dto: SignupDto): Promise<{
-        access_token: string;
-        user: {
-            id: any;
-            name: string;
-            email: string;
-            role: import("./roles.enum").UserRole;
-            companyId: string;
-            status: "active" | "inactive";
-        };
+        message: string;
     }>;
     githubLogin(): void;
     githubCallback(req: any, res: any): Promise<void>;
+    verifyEmail(token: string, res: any): Promise<void>;
 }

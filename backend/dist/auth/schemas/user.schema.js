@@ -39,6 +39,14 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true, default: 'active' }),
     __metadata("design:type", String)
 ], User.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isEmailVerified", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, default: null }),
+    __metadata("design:type", String)
+], User.prototype, "emailVerificationToken", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ collection: 'users', timestamps: true })
 ], User);

@@ -10,11 +10,13 @@ import { User, UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CompanyConfig, CompanyConfigSchema } from '../company/schemas/company-config.schema';
 import { GithubStrategy } from './strategies/github.strategy';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule,
     PassportModule,
+    MailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -27,5 +27,10 @@ async githubCallback(@Req() req, @Res() res) {
   const result = await this.authService.loginGithubUser(req.user);
   const token = result.access_token;
   res.redirect(`http://localhost:4200/auth/callback?token=${token}`);
+}
+@Get('verify-email')
+async verifyEmail(@Query('token') token: string, @Res() res: any) {
+  await this.authService.verifyEmail(token);
+  res.redirect('http://localhost:4200/login?verified=true');
 }
 }

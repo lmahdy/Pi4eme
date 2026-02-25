@@ -1,11 +1,11 @@
 import {
-  TranslateLoader
-} from "./chunk-HPSDTEAP.js";
-import {
   HttpBackend,
   HttpClient
 } from "./chunk-2EMAOMGG.js";
 import "./chunk-LGDCM7U3.js";
+import {
+  TranslateLoader
+} from "./chunk-HPSDTEAP.js";
 import {
   Injectable,
   InjectionToken,

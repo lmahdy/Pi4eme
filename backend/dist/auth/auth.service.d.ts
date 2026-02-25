@@ -6,6 +6,7 @@ import { SignupDto } from './dto/signup.dto';
 import { UserRole } from './roles.enum';
 import { CompanyConfigDocument } from '../company/schemas/company-config.schema';
 import { Types } from 'mongoose';
+import { MailService } from '../mail/mail.service';
 export interface JwtPayload {
     sub: string;
     email: string;
@@ -16,7 +17,8 @@ export declare class AuthService implements OnModuleInit {
     private userModel;
     private companyModel;
     private jwtService;
-    constructor(userModel: Model<UserDocument>, companyModel: Model<CompanyConfigDocument>, jwtService: JwtService);
+    private mailService;
+    constructor(userModel: Model<UserDocument>, companyModel: Model<CompanyConfigDocument>, jwtService: JwtService, mailService: MailService);
     onModuleInit(): Promise<void>;
     login(email: string, password: string): Promise<{
         access_token: string;
@@ -30,15 +32,7 @@ export declare class AuthService implements OnModuleInit {
         };
     }>;
     signup(dto: SignupDto): Promise<{
-        access_token: string;
-        user: {
-            id: any;
-            name: string;
-            email: string;
-            role: UserRole;
-            companyId: string;
-            status: "active" | "inactive";
-        };
+        message: string;
     }>;
     findOrCreateGithubUser(profile: any): Promise<import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
         _id: Types.ObjectId;
@@ -55,5 +49,8 @@ export declare class AuthService implements OnModuleInit {
             companyId: any;
             status: any;
         };
+    }>;
+    verifyEmail(token: string): Promise<{
+        message: string;
     }>;
 }
