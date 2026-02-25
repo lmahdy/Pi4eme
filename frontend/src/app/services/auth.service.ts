@@ -64,10 +64,7 @@ export class AuthService {
         })
       );
   }
-<<<<<<< HEAD
-=======
-  updateProfile(data: any) {
-  return this.http.patch(`${this.apiBase}/users/update-profile`, data);
-}
->>>>>>> main
+updateProfile(data: any) {
+    return this.http.patch(`${this.apiBase}/users/update-profile`, data);
+  }
 }
