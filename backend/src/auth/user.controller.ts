@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Controller, Get, Param, Post, Body, UseGuards, Patch, Delete, Request } from '@nestjs/common';
+=======
+import { Controller, Get, Param, Post, Body, UseGuards, Patch, Delete } from '@nestjs/common';
+>>>>>>> main
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -29,9 +33,12 @@ export class UserController {
     async deleteUser(@Param('id') id: string) {
         return this.userModel.findByIdAndDelete(id).exec();
     }
+<<<<<<< HEAD
     @Patch('update-profile')
     async updateProfile(@Request() req, @Body() updateData: any) {
         const userId = req.user.sub; 
         return this.userModel.findByIdAndUpdate(userId, updateData, { new: true }).exec();
     }
+=======
+>>>>>>> main
 }
