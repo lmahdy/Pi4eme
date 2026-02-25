@@ -43,6 +43,20 @@ export class AuthService {
       );
   }
 
+  requestPasswordReset(email: string) {
+    return this.http.post<{ message: string }>(
+      `${this.apiBase}/auth/forgot-password`,
+      { email },
+    );
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post<{ message: string }>(
+      `${this.apiBase}/auth/reset-password`,
+      { token, newPassword },
+    );
+  }
+
   getToken() {
     return localStorage.getItem(this.tokenKey);
   }

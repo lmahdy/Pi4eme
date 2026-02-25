@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const user_schema_1 = require("./schemas/user.schema");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const company_config_schema_1 = require("../company/schemas/company-config.schema");
+const email_service_1 = require("./email.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -40,7 +41,7 @@ exports.AuthModule = AuthModule = __decorate([
             ]),
         ],
         controllers: [auth_controller_1.AuthController, user_controller_1.UserController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, email_service_1.EmailService],
         exports: [auth_service_1.AuthService, mongoose_1.MongooseModule, jwt_1.JwtModule, passport_1.PassportModule],
     })
 ], AuthModule);

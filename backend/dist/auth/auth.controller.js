@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const signup_dto_1 = require("./dto/signup.dto");
+const forgot_password_dto_1 = require("./dto/forgot-password.dto");
+const reset_password_dto_1 = require("./dto/reset-password.dto");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -26,6 +28,16 @@ let AuthController = class AuthController {
     }
     async signup(dto) {
         return this.authService.signup(dto);
+    }
+    async forgotPassword(dto) {
+        await this.authService.requestPasswordReset(dto.email);
+        return {
+            message: 'If an account exists for this email, a password reset link has been sent.',
+        };
+    }
+    async resetPassword(dto) {
+        await this.authService.resetPassword(dto.token, dto.newPassword);
+        return { message: 'Password has been updated successfully.' };
     }
 };
 exports.AuthController = AuthController;
@@ -43,6 +55,20 @@ __decorate([
     __metadata("design:paramtypes", [signup_dto_1.SignupDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signup", null);
+__decorate([
+    (0, common_1.Post)('forgot-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [forgot_password_dto_1.ForgotPasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('reset-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [reset_password_dto_1.ResetPasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

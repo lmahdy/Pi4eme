@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -8,6 +8,8 @@ import { SignupDto } from './dto/signup.dto';
 import { UserRole } from './roles.enum';
 import { CompanyConfig, CompanyConfigDocument } from '../company/schemas/company-config.schema';
 import { Types } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
+import { EmailService } from './email.service';
 
 export interface JwtPayload {
   sub: string;
@@ -18,10 +20,14 @@ export interface JwtPayload {
 
 @Injectable()
 export class AuthService implements OnModuleInit {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(CompanyConfig.name) private companyModel: Model<CompanyConfigDocument>,
     private jwtService: JwtService,
+    private configService: ConfigService,
+    private emailService: EmailService,
   ) { }
 
   async onModuleInit() {
@@ -133,5 +139,58 @@ export class AuthService implements OnModuleInit {
         status: user.status,
       },
     };
+  }
+
+  async requestPasswordReset(email: string) {
+    const normalizedEmail = email.toLowerCase();
+    const user = await this.userModel.findOne({ email: normalizedEmail }).exec();
+
+    // Do not reveal whether the user exists to avoid account enumeration
+    if (!user) {
+      return;
+    }
+
+    const token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        companyId: user.companyId,
+        purpose: 'password_reset',
+      },
+      { expiresIn: '15m' },
+    );
+
+    const frontendBase =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:4200';
+    const resetUrl = `${frontendBase.replace(/\/$/, '')}/reset-password?token=${token}`;
+
+    try {
+      await this.emailService.sendPasswordReset(user.email, resetUrl);
+    } catch (err) {
+      this.logger.error(`Failed to send password reset email to ${user.email}: ${err?.message}`);
+      // Do not surface email errors to the caller – the link was generated successfully
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    let payload: any;
+    try {
+      payload = await this.jwtService.verifyAsync(token);
+    } catch {
+      throw new BadRequestException('Reset link is invalid or has expired');
+    }
+
+    if (payload.purpose !== 'password_reset' || !payload.sub) {
+      throw new BadRequestException('Reset link is invalid or has expired');
+    }
+
+    const user = await this.userModel.findById(payload.sub).exec();
+    if (!user) {
+      throw new BadRequestException('Reset link is invalid or has expired');
+    }
+
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    await user.save();
   }
 }

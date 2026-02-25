@@ -37,7 +37,8 @@
         "NEW_HERE": "New here?",
         "CREATE_ACCOUNT": "Create an account",
         "FAILED": "Login failed. Check credentials.",
-        "DEACTIVATED": "Account is deactivated. Contact administrator."
+        "DEACTIVATED": "Account is deactivated. Contact administrator.",
+        "FORGOT": "Forgot your password?"
     },
     "SIGNUP": {
         "TITLE": "Create Account",
@@ -57,6 +58,22 @@
         "ALREADY_HAVE": "Already have an account?",
         "LOGIN": "Login",
         "FAILED": "Signup failed"
+    },
+    "RESET": {
+        "TITLE": "Reset password",
+        "SUBTITLE": "Enter your Tenexa email to receive a secure reset link.",
+        "SUBTITLE_CHANGE": "Choose a new password for your Tenexa account.",
+        "EMAIL": "Work email",
+        "NEW_PASSWORD": "New password",
+        "CONFIRM_PASSWORD": "Confirm new password",
+        "SUBMIT": "Update password",
+        "REQUEST": "Send reset email",
+        "SUCCESS": "Your password has been updated. You can now sign in with your new credentials.",
+        "FAILED": "We couldn't reset your password. The link may have expired. Please request a new email.",
+        "INVALID_LINK": "This reset link is invalid or has expired.",
+        "MISMATCH": "Passwords do not match. Please re-enter them.",
+        "EMAIL_SENT": "If an account exists for this email, we've sent a password reset link.",
+        "REQUEST_FAILED": "We couldn't send the reset email. Please try again in a moment."
     },
     "COMMON": {
         "LANGUAGE": "Language",

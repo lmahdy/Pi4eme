@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { User, UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CompanyConfig, CompanyConfigSchema } from '../company/schemas/company-config.schema';
+import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { CompanyConfig, CompanyConfigSchema } from '../company/schemas/company-c
     ]),
   ],
   controllers: [AuthController, UserController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, EmailService],
   exports: [AuthService, MongooseModule, JwtModule, PassportModule],
 })
 export class AuthModule { }

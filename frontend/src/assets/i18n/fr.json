@@ -37,7 +37,8 @@
         "NEW_HERE": "Nouveau ici ?",
         "CREATE_ACCOUNT": "Créer un compte",
         "FAILED": "Échec de la connexion. Vérifiez vos identifiants.",
-        "DEACTIVATED": "Le compte est désactivé. Contactez l'administrateur."
+        "DEACTIVATED": "Le compte est désactivé. Contactez l'administrateur.",
+        "FORGOT": "Mot de passe oublié ?"
     },
     "SIGNUP": {
         "TITLE": "Créer un compte",
@@ -58,6 +59,22 @@
         "ALREADY_HAVE": "Vous avez déjà un compte ?",
         "LOGIN": "Connexion",
         "FAILED": "L'inscription a échoué"
+    },
+    "RESET": {
+        "TITLE": "Réinitialiser le mot de passe",
+        "SUBTITLE": "Saisissez votre e-mail Tenexa pour recevoir un lien sécurisé.",
+        "SUBTITLE_CHANGE": "Choisissez un nouveau mot de passe pour votre compte Tenexa.",
+        "EMAIL": "E-mail professionnel",
+        "NEW_PASSWORD": "Nouveau mot de passe",
+        "CONFIRM_PASSWORD": "Confirmer le mot de passe",
+        "SUBMIT": "Mettre à jour le mot de passe",
+        "REQUEST": "Envoyer l'e-mail de réinitialisation",
+        "SUCCESS": "Votre mot de passe a été mis à jour. Vous pouvez maintenant vous connecter avec vos nouveaux identifiants.",
+        "FAILED": "Impossible de réinitialiser le mot de passe. Le lien a peut-être expiré. Demandez un nouvel e-mail.",
+        "INVALID_LINK": "Ce lien de réinitialisation est invalide ou a expiré.",
+        "MISMATCH": "Les mots de passe ne correspondent pas. Veuillez les saisir à nouveau.",
+        "EMAIL_SENT": "Si un compte existe pour cet e-mail, nous avons envoyé un lien de réinitialisation du mot de passe.",
+        "REQUEST_FAILED": "Nous n'avons pas pu envoyer l'e-mail de réinitialisation. Veuillez réessayer dans un instant."
     },
     "COMMON": {
         "LANGUAGE": "Langue",

@@ -6,6 +6,8 @@ import { PurchasesDashboardComponent } from './pages/purchases-dashboard.compone
 import { ReportDashboardComponent } from './pages/report-dashboard.component';
 import { AssistantComponent } from './pages/assistant.component';
 import { AdminPanelComponent } from './pages/admin-panel.component';
+import { ResetPasswordComponent } from './pages/reset-password.component';
+import { ForgotPasswordComponent } from './pages/forgot-password.component';
 
 import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
@@ -16,6 +18,8 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'signup', component: SignupComponent, canActivate: [guestGuard] },
+  { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [guestGuard] },
   { path: 'sales', component: SalesDashboardComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },
   { path: 'purchases', component: PurchasesDashboardComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },
   { path: 'report', component: ReportDashboardComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },

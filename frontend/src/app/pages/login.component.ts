@@ -24,6 +24,10 @@ import { TranslateModule } from '@ngx-translate/core';
           <input type="password" [(ngModel)]="password" name="password" required />
 
           <button class="button full-width" type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
+
+          <button class="link-button" type="button" (click)="goToForgot()">
+            {{ 'LOGIN.FORGOT' | translate }}
+          </button>
         </form>
         <p class="hint">
           {{ 'LOGIN.NEW_HERE' | translate }} 
@@ -77,6 +81,21 @@ import { TranslateModule } from '@ngx-translate/core';
         color: #6b7280;
         margin-top: 12px;
       }
+
+      .link-button {
+        margin-top: 8px;
+        padding: 0;
+        border: none;
+        background: none;
+        color: #2563eb;
+        font-size: 13px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .link-button:hover {
+        text-decoration: underline;
+      }
     `,
   ],
 })
@@ -94,5 +113,9 @@ export class LoginComponent {
         alert(message);
       },
     });
+  }
+
+  goToForgot() {
+    this.router.navigate(['/forgot-password']);
   }
 }
