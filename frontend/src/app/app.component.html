@@ -1,8 +1,11 @@
 <div class="app-shell">
   <header class="app-header">
     <div class="brand">
-      <span class="brand-title">BI Platform</span>
-      <span class="brand-sub">{{ 'NAV.BRAND_SUB' | translate }}</span>
+      <img src="assets/tenexa-logo.png" alt="Tenexa logo" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-title">Tenexa</span>
+        <span class="brand-sub">{{ 'NAV.BRAND_SUB' | translate }}</span>
+      </div>
     </div>
     <nav class="nav" *ngIf="showNavigation">
       <ng-container *ngIf="!(isAdmin$ | async)">

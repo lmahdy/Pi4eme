@@ -22,7 +22,7 @@ import { FormsModule } from '@angular/forms';
         </select>
       </div>
 
-      <table class="table">
+      <table class="table admin-table">
         <thead>
           <tr>
             <th (click)="sort('companyId')">{{ 'ADMIN.COMPANY_ID' | translate }} ↕</th>
@@ -59,27 +59,42 @@ import { FormsModule } from '@angular/forms';
     styles: [`
     .filters {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
     }
     .search-input {
       flex: 1;
-      padding: 8px;
+      padding: 8px 10px;
       border: 1px solid #d1d5db;
-      border-radius: 6px;
+      border-radius: 999px;
+      font-size: 14px;
     }
-    .badge-success { background-color: #10b981; color: white; }
-    .badge-danger { background-color: #ef4444; color: white; }
+    select {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+    }
+    .badge-success { background-color: rgba(16, 185, 129, 0.1); color: #047857; }
+    .badge-danger { background-color: rgba(239, 68, 68, 0.1); color: #b91c1c; }
     .button-small {
-      padding: 4px 8px;
+      padding: 4px 10px;
       font-size: 12px;
       cursor: pointer;
       margin-right: 4px;
+      border-radius: 999px;
+      border: none;
+      background: var(--tenexa-soft-blue, #7da0ca);
+      color: var(--tenexa-navy, #021024);
     }
     .button-danger {
       background-color: #ef4444;
       color: white;
-      border: none;
+    }
+    .admin-table th {
+      background: rgba(193, 232, 255, 0.3);
     }
     th { cursor: pointer; user-select: none; }
   `]

@@ -12,29 +12,40 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
-    <div class="card login-card">
-      <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
-      <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
-      <form (ngSubmit)="submit()">
-        <label>{{ 'LOGIN.EMAIL' | translate }}</label>
-        <input type="email" [(ngModel)]="email" name="email" required />
+    <div class="auth-shell">
+      <div class="card login-card">
+        <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
+        <p class="subtitle">{{ 'LOGIN.SUBTITLE' | translate }}</p>
+        <form (ngSubmit)="submit()">
+          <label>{{ 'LOGIN.EMAIL' | translate }}</label>
+          <input type="email" [(ngModel)]="email" name="email" required />
 
-        <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
-        <input type="password" [(ngModel)]="password" name="password" required />
+          <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
+          <input type="password" [(ngModel)]="password" name="password" required />
 
-        <button class="button" type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
-      </form>
-      <p class="hint">
-        {{ 'LOGIN.NEW_HERE' | translate }} 
-        <a routerLink="/signup">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</a>
-      </p>
+          <button class="button full-width" type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
+        </form>
+        <p class="hint">
+          {{ 'LOGIN.NEW_HERE' | translate }} 
+          <a routerLink="/signup">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</a>
+        </p>
+      </div>
     </div>
   `,
   styles: [
     `
+      .auth-shell {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+      }
+
       .login-card {
-        max-width: 420px;
-        margin: 40px auto;
+        max-width: 560px;
+        width: 100%;
+        padding: 28px 32px;
       }
 
       form {
@@ -44,9 +55,21 @@ import { TranslateModule } from '@ngx-translate/core';
       }
 
       input {
-        padding: 8px;
-        border-radius: 6px;
+        padding: 10px 12px;
+        border-radius: 8px;
         border: 1px solid #d1d5db;
+        font-size: 14px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+
+      .full-width {
+        width: 100%;
+        margin-top: 4px;
       }
 
       .hint {

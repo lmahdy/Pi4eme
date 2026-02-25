@@ -74,6 +74,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     `
       .alert {
         margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: rgba(254, 242, 242, 0.6);
       }
     `,
   ],

@@ -8,14 +8,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, TranslateModule],
   template: `
-    <div class="card">
+    <div class="card assistant-header">
       <h2>{{ 'ASSISTANT.TITLE' | translate }}</h2>
-      <p>{{ 'ASSISTANT.SUBTITLE' | translate }}</p>
+      <p class="subtitle">{{ 'ASSISTANT.SUBTITLE' | translate }}</p>
       <button class="button" (click)="trigger()">{{ 'ASSISTANT.SEND_EMAIL' | translate }}</button>
-      <p *ngIf="message">{{ message }}</p>
+      <p class="status" *ngIf="message">{{ message }}</p>
     </div>
 
-    <div class="grid grid-3">
+    <div class="grid grid-3 assistant-grid">
       <div class="card">
         <h3>{{ 'ASSISTANT.SALES_INSIGHT' | translate }}</h3>
         <p>{{ 'ASSISTANT.BEST' | translate }}: {{ salesInsight.best_product || ( 'COMMON.N_A' | translate ) }}</p>
@@ -34,6 +34,29 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       </div>
     </div>
   `,
+  styles: [
+    `
+      .assistant-header {
+        margin-bottom: 20px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 16px;
+      }
+
+      .status {
+        font-size: 12px;
+        color: #4b5563;
+        margin-top: 8px;
+      }
+
+      .assistant-grid .card h3 {
+        margin-bottom: 8px;
+      }
+    `,
+  ],
 })
 export class AssistantComponent implements OnInit {
   message = '';

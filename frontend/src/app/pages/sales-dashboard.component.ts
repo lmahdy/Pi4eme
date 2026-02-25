@@ -43,12 +43,25 @@ export class SalesDashboardComponent implements OnInit {
 
   lineChartData: ChartData<'line'> = {
     labels: [],
-    datasets: [{ data: [], label: 'Revenue', borderColor: '#2563eb', backgroundColor: '#93c5fd' }],
+    datasets: [
+      {
+        data: [],
+        label: 'Revenue',
+        borderColor: '#052659',
+        backgroundColor: '#7da0ca',
+      },
+    ],
   };
 
   barChartData: ChartData<'bar'> = {
     labels: [],
-    datasets: [{ data: [], label: 'Revenue', backgroundColor: '#10b981' }],
+    datasets: [
+      {
+        data: [],
+        label: 'Revenue',
+        backgroundColor: '#5483b3',
+      },
+    ],
   };
 
   constructor(private api: ApiService, private translate: TranslateService) { }

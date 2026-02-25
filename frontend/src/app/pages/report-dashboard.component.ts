@@ -58,6 +58,7 @@ import { TranslateModule } from '@ngx-translate/core';
       .health-score {
         font-size: 32px;
         font-weight: 700;
+        color: var(--tenexa-deep-blue, #052659);
       }
 
       .gauge {
@@ -70,7 +71,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
       .gauge-fill {
         height: 100%;
-        background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444);
+        background: linear-gradient(90deg, #7da0ca, #052659);
       }
     `,
   ],
