@@ -1,9 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { FaceRecognitionService } from '../services/face-recognition.service';
+=======
+import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
+>>>>>>> origin/feature/user-profile
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -14,6 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
     <div class="card login-card">
       <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
       <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
+<<<<<<< HEAD
 
       <!-- ── Tabs ── -->
       <div class="tabs" *ngIf="step === 'credentials'">
@@ -27,12 +35,16 @@ import { TranslateModule } from '@ngx-translate/core';
 
       <!-- ─────────── PASSWORD MODE ─────────── -->
       <form *ngIf="mode === 'password' && step === 'credentials'" (ngSubmit)="submit()">
+=======
+      <form (ngSubmit)="submit()">
+>>>>>>> origin/feature/user-profile
         <label>{{ 'LOGIN.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="email" name="email" required />
 
         <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
         <input type="password" [(ngModel)]="password" name="password" required />
 
+<<<<<<< HEAD
         <button class="button" type="submit" [disabled]="loading">
           {{ loading ? 'Signing in…' : ('LOGIN.SUBMIT' | translate) }}
         </button>
@@ -108,10 +120,17 @@ import { TranslateModule } from '@ngx-translate/core';
 
       <p class="hint" *ngIf="step === 'credentials'">
         {{ 'LOGIN.NEW_HERE' | translate }}
+=======
+        <button class="button" type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
+      </form>
+      <p class="hint">
+        {{ 'LOGIN.NEW_HERE' | translate }} 
+>>>>>>> origin/feature/user-profile
         <a routerLink="/signup">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</a>
       </p>
     </div>
   `,
+<<<<<<< HEAD
   styles: [`
     .login-card { max-width: 440px; margin: 40px auto; }
 
@@ -325,4 +344,48 @@ export class LoginComponent {
   ngOnDestroy() {
     this.stream?.getTracks().forEach(t => t.stop());
   }
+=======
+  styles: [
+    `
+      .login-card {
+        max-width: 420px;
+        margin: 40px auto;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 12px;
+      }
+    `,
+  ],
+})
+export class LoginComponent {
+  email = '';
+  password = '';
+
+  constructor(private authService: AuthService, private router: Router) { }
+
+  submit() {
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => this.router.navigate(['/sales']),
+      error: (error) => {
+        const message = error.error?.message || 'Login failed. Check credentials.';
+        alert(message);
+      },
+    });
+  }
+>>>>>>> origin/feature/user-profile
 }

@@ -1,0 +1,170 @@
+{
+<<<<<<< HEAD
+  "hash": "6a25d999",
+  "configHash": "50ddae72",
+  "lockfileHash": "7ac63e5b",
+  "browserHash": "2ec55042",
+=======
+  "hash": "43681dad",
+  "configHash": "082a9ed1",
+  "lockfileHash": "630c20b0",
+  "browserHash": "942629a4",
+>>>>>>> main
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+<<<<<<< HEAD
+      "fileHash": "8a814f23",
+=======
+      "fileHash": "5409f1f1",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@angular/common/http": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+<<<<<<< HEAD
+      "fileHash": "00cfc085",
+=======
+      "fileHash": "ff8e7f74",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+<<<<<<< HEAD
+      "fileHash": "0e62ab7b",
+=======
+      "fileHash": "7853ccbc",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+<<<<<<< HEAD
+      "fileHash": "65468420",
+=======
+      "fileHash": "9b0d1b32",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+<<<<<<< HEAD
+      "fileHash": "8195547a",
+=======
+      "fileHash": "33015336",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+<<<<<<< HEAD
+      "fileHash": "f6dfe423",
+=======
+      "fileHash": "aa39e891",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@ngx-translate/core": {
+      "src": "../../../../../node_modules/@ngx-translate/core/fesm2022/ngx-translate-core.mjs",
+      "file": "@ngx-translate_core.js",
+<<<<<<< HEAD
+      "fileHash": "0cfc8e7b",
+=======
+      "fileHash": "0f0d3fe5",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "@ngx-translate/http-loader": {
+      "src": "../../../../../node_modules/@ngx-translate/http-loader/fesm2022/ngx-translate-http-loader.mjs",
+      "file": "@ngx-translate_http-loader.js",
+<<<<<<< HEAD
+      "fileHash": "cec189b7",
+=======
+      "fileHash": "6fdf367a",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "chart.js/auto": {
+      "src": "../../../../../node_modules/chart.js/auto/auto.js",
+      "file": "chart__js_auto.js",
+<<<<<<< HEAD
+      "fileHash": "048a0db1",
+=======
+      "fileHash": "3d9b3585",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "jwt-decode": {
+      "src": "../../../../../node_modules/jwt-decode/build/esm/index.js",
+      "file": "jwt-decode.js",
+<<<<<<< HEAD
+      "fileHash": "13c81c97",
+=======
+      "fileHash": "219824f8",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "ng2-charts": {
+      "src": "../../../../../node_modules/ng2-charts/fesm2022/ng2-charts.mjs",
+      "file": "ng2-charts.js",
+<<<<<<< HEAD
+      "fileHash": "1968a68e",
+=======
+      "fileHash": "278b7457",
+>>>>>>> main
+      "needsInterop": false
+    },
+    "rxjs": {
+      "src": "../../../../../node_modules/rxjs/dist/esm5/index.js",
+      "file": "rxjs.js",
+<<<<<<< HEAD
+      "fileHash": "234c9a9c",
+=======
+      "fileHash": "303b1f70",
+>>>>>>> main
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-FPUYUH6A": {
+      "file": "chunk-FPUYUH6A.js"
+    },
+<<<<<<< HEAD
+    "chunk-QWSFDIAV": {
+      "file": "chunk-QWSFDIAV.js"
+    },
+=======
+>>>>>>> main
+    "chunk-TGVFEQZS": {
+      "file": "chunk-TGVFEQZS.js"
+    },
+    "chunk-FFY7VSBW": {
+      "file": "chunk-FFY7VSBW.js"
+    },
+    "chunk-RVKK72TE": {
+      "file": "chunk-RVKK72TE.js"
+    },
+<<<<<<< HEAD
+=======
+    "chunk-QWSFDIAV": {
+      "file": "chunk-QWSFDIAV.js"
+    },
+>>>>>>> main
+    "chunk-PCGAWVWW": {
+      "file": "chunk-PCGAWVWW.js"
+    },
+    "chunk-E5ECCKE6": {
+      "file": "chunk-E5ECCKE6.js"
+    },
+    "chunk-WDMUDEB6": {
+      "file": "chunk-WDMUDEB6.js"
+    }
+  }
+}

@@ -2,6 +2,7 @@
   <header class="app-header">
     <div class="brand">
       <span class="brand-title">BI Platform</span>
+<<<<<<< HEAD
       <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
     </div>
     <nav class="nav" *ngIf="showNavigation">
@@ -25,6 +26,22 @@
         (change)="changeLang(langSelect.value)"
         [value]="currentLang"
       >
+=======
+      <span class="brand-sub">{{ 'NAV.BRAND_SUB' | translate }}</span>
+    </div>
+    <nav class="nav" *ngIf="showNavigation">
+      <ng-container *ngIf="!(isAdmin$ | async)">
+        <a routerLink="/sales">{{ 'NAV.SALES' | translate }}</a>
+        <a routerLink="/purchases">{{ 'NAV.PURCHASES' | translate }}</a>
+        <a routerLink="/report">{{ 'NAV.REPORT' | translate }}</a>
+        <a routerLink="/assistant">{{ 'NAV.ASSISTANT' | translate }}</a>
+      </ng-container>
+      <a routerLink="/admin" *ngIf="isAdmin$ | async">{{ 'NAV.ADMIN' | translate }}</a>
+      <a routerLink="/login" (click)="logout()">{{ 'NAV.LOGOUT' | translate }}</a>
+    </nav>
+    <div class="lang-selector">
+      <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
+>>>>>>> origin/feature/user-profile
         <option value="en">EN</option>
         <option value="fr">FR</option>
         <option value="ar">AR</option>
@@ -34,4 +51,8 @@
   <main class="app-main">
     <router-outlet></router-outlet>
   </main>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> origin/feature/user-profile

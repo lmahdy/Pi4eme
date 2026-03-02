@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+<<<<<<< HEAD
 import { FaceRecognitionService } from '../services/face-recognition.service';
+=======
+>>>>>>> origin/feature/user-profile
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -15,8 +18,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       <h2>{{ 'SIGNUP.TITLE' | translate }}</h2>
       <p>{{ 'SIGNUP.SUBTITLE' | translate }}</p>
 
+<<<<<<< HEAD
       <!-- ── Step 1: Registration Form ── -->
       <form (ngSubmit)="submit()" *ngIf="step === 'form'">
+=======
+      <form (ngSubmit)="submit()">
+>>>>>>> origin/feature/user-profile
         <label>{{ 'SIGNUP.NAME' | translate }}</label>
         <input type="text" [(ngModel)]="name" name="name" required />
 
@@ -52,6 +59,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
           <p class="hint">{{ 'SIGNUP.ID_HINT' | translate }}</p>
         </ng-container>
 
+<<<<<<< HEAD
         <button class="button" type="submit" [disabled]="submitting">
           {{ submitting ? 'Creating account...' : ('SIGNUP.SUBMIT' | translate) }}
         </button>
@@ -157,6 +165,27 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class SignupComponent {
   // Form fields
+=======
+        <button class="button" type="submit">{{ 'SIGNUP.SUBMIT' | translate }}</button>
+        <p class="hint">
+          {{ 'SIGNUP.ALREADY_HAVE' | translate }} 
+          <a routerLink="/login">{{ 'SIGNUP.LOGIN' | translate }}</a>
+        </p>
+      </form>
+    </div>
+  `,
+  styles: [
+    `
+      .signup-card { max-width: 520px; margin: 40px auto; }
+      form { display: flex; flex-direction: column; gap: 10px; }
+      input { padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; }
+      .role-row { display: flex; gap: 12px; }
+      .hint { font-size: 12px; color: #6b7280; }
+    `,
+  ],
+})
+export class SignupComponent {
+>>>>>>> origin/feature/user-profile
   name = '';
   email = '';
   password = '';
@@ -167,6 +196,7 @@ export class SignupComponent {
   notificationEmail = '';
   companyId = '';
 
+<<<<<<< HEAD
   // UI state
   step: 'form' | 'face' = 'form';
   submitting = false;
@@ -187,6 +217,15 @@ export class SignupComponent {
   // ── Step 1: Register ──────────────────────────────────────────────
   submit() {
     this.submitting = true;
+=======
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private translate: TranslateService
+  ) { }
+
+  submit() {
+>>>>>>> origin/feature/user-profile
     this.authService
       .signup({
         name: this.name,
@@ -200,6 +239,7 @@ export class SignupComponent {
         companyId: this.role === 'Accountant' ? this.companyId : undefined,
       })
       .subscribe({
+<<<<<<< HEAD
         next: () => {
           this.submitting = false;
           this.step = 'face'; // Move to face enroll step
@@ -276,4 +316,10 @@ export class SignupComponent {
   ngOnDestroy() {
     this.stream?.getTracks().forEach(t => t.stop());
   }
+=======
+        next: () => this.router.navigate(['/sales']),
+        error: (err) => alert(err?.error?.message || this.translate.instant('SIGNUP.FAILED')),
+      });
+  }
+>>>>>>> origin/feature/user-profile
 }
