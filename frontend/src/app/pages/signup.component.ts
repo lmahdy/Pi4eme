@@ -11,9 +11,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
     <div class="card signup-card">
-    <div *ngIf="submitted" class="success-box">
-  ✅ Account created! Please check your email to verify your account before logging in.
-</div>
+      <div *ngIf="submitted" class="success-box">
+        Account created! Please check your email to verify your account before logging in.
+      </div>
 
       <h2>{{ 'SIGNUP.TITLE' | translate }}</h2>
       <p>{{ 'SIGNUP.SUBTITLE' | translate }}</p>
@@ -54,34 +54,34 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
           <p class="hint">{{ 'SIGNUP.ID_HINT' | translate }}</p>
         </ng-container>
 
-        <button class="button" type="submit">{{ 'SIGNUP.SUBMIT' | translate }}</button>
+        <button class="button" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Creating account...' : ('SIGNUP.SUBMIT' | translate) }}
+        </button>
         <p class="hint">
-          {{ 'SIGNUP.ALREADY_HAVE' | translate }} 
+          {{ 'SIGNUP.ALREADY_HAVE' | translate }}
           <a routerLink="/login">{{ 'SIGNUP.LOGIN' | translate }}</a>
         </p>
       </form>
     </div>
   `,
-  styles: [
-    `
-      .signup-card { max-width: 520px; margin: 40px auto; }
-      form { display: flex; flex-direction: column; gap: 10px; }
-      input { padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; }
-      .role-row { display: flex; gap: 12px; }
-      .hint { font-size: 12px; color: #6b7280; }
-    
-      .success-box {
-  background-color: #d1fae5;
-  border: 1px solid #6ee7b7;
-  color: #065f46;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 500;
-}
-    `,
-    
-  ],
+  styles: [`
+    .signup-card { max-width: 520px; margin: 40px auto; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input { padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; }
+    .role-row { display: flex; gap: 12px; }
+    .hint { font-size: 12px; color: #6b7280; }
+
+    .success-box {
+      background-color: #d1fae5;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+  `],
 })
 export class SignupComponent {
   name = '';
@@ -94,14 +94,16 @@ export class SignupComponent {
   notificationEmail = '';
   companyId = '';
   submitted = false;
+  submitting = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) { }
 
   submit() {
+    this.submitting = true;
     this.authService
       .signup({
         name: this.name,
@@ -115,8 +117,14 @@ export class SignupComponent {
         companyId: this.role === 'Accountant' ? this.companyId : undefined,
       })
       .subscribe({
-        next: () => this.submitted = true, // ← show success message
-        error: (err) => alert(err?.error?.message || this.translate.instant('SIGNUP.FAILED')),
+        next: () => {
+          this.submitting = false;
+          this.submitted = true;
+        },
+        error: (err) => {
+          this.submitting = false;
+          alert(err?.error?.message || this.translate.instant('SIGNUP.FAILED'));
+        },
       });
   }
 }

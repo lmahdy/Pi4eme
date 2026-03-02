@@ -13,6 +13,9 @@ build/
 # Angular cache
 .angular/
 
+# Models (optional — big files)
+frontend/src/assets/models/
+
 # Logs
 *.log
 npm-debug.log*
@@ -20,3 +23,6 @@ npm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Temp files
+tmpclaude*

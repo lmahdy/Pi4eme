@@ -22,6 +22,15 @@ export class User {
   @Prop({ required: true, default: 'active' })
   status: 'active' | 'inactive';
 
+  @Prop({ type: [Number], default: null })
+  faceDescriptor: number[] | null;
+
+  @Prop({ default: false })
+  twoFactorEnabled: boolean;
+
+  @Prop({ default: null })
+  twoFactorSecret: string | null;
+
   @Prop({ default: false })
   isEmailVerified: boolean;
 
