@@ -28,7 +28,7 @@ import { CompanyConfig, CompanyConfigSchema } from '../company/schemas/company-c
     ]),
   ],
   controllers: [AuthController, UserController],
-    providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService, MongooseModule, JwtModule, PassportModule],
 })
 export class AuthModule { }

@@ -13,3 +13,4 @@ frontend/src/assets/models/
 
 # Logs
 *.logtmpclaude*
+"frontend/.idea/" 

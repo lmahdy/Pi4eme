@@ -21,8 +21,6 @@ export class User {
 
   @Prop({ required: true, default: 'active' })
   status: 'active' | 'inactive';
-    @Prop({ type: [Number], default: [] })
-    faceDescriptor: number[];
 }
 
 export type UserDocument = User & Document;
