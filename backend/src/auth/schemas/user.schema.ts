@@ -39,6 +39,12 @@ export class User {
 
   @Prop({ type: String, default: null })
   photo: string | null;
+
+  @Prop({ type: String, default: null })
+  passwordResetToken: string | null;
+
+  @Prop({ type: Date, default: null })
+  passwordResetExpiry: Date | null;
 }
 
 export type UserDocument = User & Document;

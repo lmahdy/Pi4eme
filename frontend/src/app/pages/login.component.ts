@@ -43,7 +43,10 @@ import { TranslateModule } from '@ngx-translate/core';
             <input type="email" [(ngModel)]="email" name="email" required placeholder="you@example.com" />
           </div>
           <div class="form-group">
-            <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
+              <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
+            </div>
             <input type="password" [(ngModel)]="password" name="password" required placeholder="••••••••" />
           </div>
           <button class="btn-primary" type="submit" [disabled]="loading">
@@ -222,6 +225,13 @@ import { TranslateModule } from '@ngx-translate/core';
     form { display: flex; flex-direction: column; gap: 16px; }
 
     .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .forgot-link {
+      font-size: 11.5px; font-weight: 700;
+      color: #5483B3; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: #021024; text-decoration: underline; }
 
     label {
       font-size: 11.5px; font-weight: 700;

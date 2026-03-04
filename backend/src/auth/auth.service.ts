@@ -23,7 +23,7 @@ export interface JwtPayload {
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-  
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(CompanyConfig.name) private companyModel: Model<CompanyConfigDocument>,
@@ -31,7 +31,7 @@ export class AuthService implements OnModuleInit {
     private twoFactorAuthService: TwoFactorAuthService,
     private mailService: MailService,
   ) { }
- 
+
   async onModuleInit() {
     const adminExists = await this.userModel.exists({ role: UserRole.Admin });
     if (!adminExists) {
@@ -105,7 +105,7 @@ export class AuthService implements OnModuleInit {
     if (existing) {
       throw new BadRequestException('Email address is already registered');
     }
-  
+
     let companyId: string;
     if (dto.role === UserRole.CompanyOwner) {
       if (!dto.companyName || dto.taxRate === undefined || dto.currency === undefined) {
@@ -129,7 +129,7 @@ export class AuthService implements OnModuleInit {
       }
       companyId = dto.companyId;
     }
-  
+
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
@@ -163,10 +163,10 @@ export class AuthService implements OnModuleInit {
   async findOrCreateGithubUser(profile: any) {
     const email = profile.emails[0].value.toLowerCase();
     const name = profile.displayName || profile.username;
-  
+
     let user = await this.userModel.findOne({ email });
     if (user) return user;
-  
+
     const companyId = new Types.ObjectId().toHexString();
     await this.companyModel.create({
       companyId,
@@ -175,7 +175,7 @@ export class AuthService implements OnModuleInit {
       currency: 'USD',
       email,
     });
-  
+
     user = await this.userModel.create({
       email,
       name,
@@ -185,10 +185,10 @@ export class AuthService implements OnModuleInit {
       status: 'active',
       isEmailVerified: true,
     });
-  
+
     return user;
   }
-  
+
   async loginGithubUser(user: any) {
     const payload: JwtPayload = {
       sub: user.id,
@@ -196,7 +196,7 @@ export class AuthService implements OnModuleInit {
       role: user.role,
       companyId: user.companyId,
     };
-  
+
     return {
       access_token: await this.jwtService.signAsync(payload),
       user: {
@@ -217,12 +217,47 @@ export class AuthService implements OnModuleInit {
     if (!user) {
       throw new BadRequestException('Invalid or expired verification token');
     }
-  
+
     user.isEmailVerified = true;
     user.emailVerificationToken = null;
     await user.save();
-  
+
     return { message: 'Email verified successfully' };
+  }
+
+  // ── Password Reset ──────────────────────────────────────────────────────────
+
+  async requestPasswordReset(email: string) {
+    const user = await this.userModel.findOne({ email: email.toLowerCase(), status: 'active' });
+    if (!user || user.passwordHash === 'GITHUB_AUTH') return;
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpiry = new Date();
+    resetExpiry.setHours(resetExpiry.getHours() + 1);
+
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { $set: { passwordResetToken: resetToken, passwordResetExpiry: resetExpiry } },
+    );
+
+    await this.mailService.sendPasswordResetEmail(user.email, resetToken);
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.userModel.findOne({
+      passwordResetToken: token,
+      passwordResetExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired password reset token');
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await this.userModel.updateOne(
+      { _id: user._id },
+      { $set: { passwordHash: newHash, passwordResetToken: null, passwordResetExpiry: null } },
+    );
   }
 
   // ── 2FA Methods ──────────────────────────────────────────────────────────────
