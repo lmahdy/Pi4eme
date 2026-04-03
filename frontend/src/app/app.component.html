@@ -1,0 +1,43 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">
+      <img class="brand-logo" src="assets/tenexa-logo.png" alt="Tenexa Logo" />
+      <div class="brand-text">
+        <span class="brand-title">Tenexa</span>
+        <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
+      </div>
+    </div>
+    <nav class="nav" *ngIf="showNavigation">
+      <ng-container *ngIf="!(isAdmin$ | async)">
+        <a routerLink="/sales" routerLinkActive="active-link">{{ "NAV.SALES" | translate }}</a>
+        <a routerLink="/purchases" routerLinkActive="active-link">{{ "NAV.PURCHASES" | translate }}</a>
+        <a routerLink="/report" routerLinkActive="active-link">{{ "NAV.REPORT" | translate }}</a>
+        <a routerLink="/assistant" routerLinkActive="active-link">{{ "NAV.ASSISTANT" | translate }}</a>
+      </ng-container>
+      <a routerLink="/admin" routerLinkActive="active-link" *ngIf="isAdmin$ | async">{{
+        "NAV.ADMIN" | translate
+        }}</a>
+      <a routerLink="/settings" routerLinkActive="active-link">{{ "NAV.SETTINGS" | translate }}</a>
+      <a routerLink="/login" (click)="logout()">{{
+        "NAV.LOGOUT" | translate
+        }}</a>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="(isDark$ | async) ? 'Switch to light mode' : 'Switch to dark mode'">
+        <span class="theme-icon" *ngIf="!(isDark$ | async)">🌙</span>
+        <span class="theme-icon" *ngIf="isDark$ | async">☀️</span>
+      </button>
+      <div class="lang-selector">
+        <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
+    </div>
+  </header>
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+  <app-chatbot *ngIf="showNavigation"></app-chatbot>
+</div>
