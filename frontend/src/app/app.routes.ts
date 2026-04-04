@@ -18,8 +18,8 @@ import { AuthCallbackComponent } from './pages/auth-callback.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'signup', component: SignupComponent, canActivate: [guestGuard] },
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'sales', component: SalesDashboardComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },

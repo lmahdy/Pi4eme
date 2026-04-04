@@ -17,20 +17,27 @@
       <a routerLink="/admin" routerLinkActive="active-link" *ngIf="isAdmin$ | async">{{
         "NAV.ADMIN" | translate
         }}</a>
-      <a routerLink="/settings" routerLinkActive="active-link">Settings</a>
+      <a routerLink="/settings" routerLinkActive="active-link">{{ "NAV.SETTINGS" | translate }}</a>
       <a routerLink="/login" (click)="logout()">{{
         "NAV.LOGOUT" | translate
         }}</a>
     </nav>
-    <div class="lang-selector">
-      <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
-        <option value="en">EN</option>
-        <option value="fr">FR</option>
-        <option value="ar">AR</option>
-      </select>
+    <div class="header-actions">
+      <button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="(isDark$ | async) ? 'Switch to light mode' : 'Switch to dark mode'">
+        <span class="theme-icon" *ngIf="!(isDark$ | async)">🌙</span>
+        <span class="theme-icon" *ngIf="isDark$ | async">☀️</span>
+      </button>
+      <div class="lang-selector">
+        <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
     </div>
   </header>
   <main class="app-main">
     <router-outlet></router-outlet>
   </main>
+  <app-chatbot *ngIf="showNavigation"></app-chatbot>
 </div>

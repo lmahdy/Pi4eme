@@ -11,7 +11,7 @@ export class Purchase {
   @Prop({ required: true })
   date: Date;
 
-  @Prop({ default: 'Unknown' })
+  @Prop({ required: true })
   supplier: string;
 
   @Prop({ default: '' })
@@ -23,7 +23,7 @@ export class Purchase {
   @Prop({ required: true, min: 0 })
   quantity: number;
 
-  @Prop({ default: 0, min: 0 })
+  @Prop({ required: true, min: 0 })
   unitCost: number;
 
   @Prop({ required: true, min: 0 })

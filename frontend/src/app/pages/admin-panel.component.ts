@@ -65,16 +65,16 @@ import { FormsModule } from '@angular/forms';
   `,
   styles: [`
     .page-header { margin-bottom: 24px; }
-    .page-header h1 { font-size: 26px; font-weight: 800; color: #021024; margin: 0 0 6px; }
-    .page-subtitle { color: #5483B3; font-size: 14px; margin: 0; }
+    .page-header h1 { font-size: 26px; font-weight: 800; color: var(--c-text); margin: 0 0 6px; }
+    .page-subtitle { color: var(--c-text-muted); font-size: 14px; margin: 0; }
 
     .filters {
       display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap;
     }
     .search-wrap {
       flex: 1; display: flex; align-items: center; gap: 10px;
-      background: #f9fdff;
-      border: 1.5px solid #C1E8FF;
+      background: var(--c-input-bg);
+      border: 1.5px solid var(--c-input-border);
       border-radius: 8px; padding: 0 14px;
       min-width: 200px;
     }
@@ -82,30 +82,30 @@ import { FormsModule } from '@angular/forms';
     .search-input {
       flex: 1; border: none; background: transparent;
       padding: 11px 0; font-size: 14px; font-family: inherit;
-      color: #021024; outline: none;
+      color: var(--c-text); outline: none;
     }
     .role-select {
       padding: 11px 14px; border-radius: 8px;
-      border: 1.5px solid #C1E8FF;
-      background: #f9fdff; color: #021024;
+      border: 1.5px solid var(--c-input-border);
+      background: var(--c-input-bg); color: var(--c-text);
       font-size: 14px; font-family: inherit; outline: none;
       cursor: pointer;
     }
-    .role-select:focus { border-color: #5483B3; }
+    .role-select:focus { border-color: var(--c-mid); }
 
     th { cursor: pointer; user-select: none; }
-    .sort-arrow { color: #7DA0CA; font-size: 12px; margin-left: 4px; }
+    .sort-arrow { color: var(--c-light); font-size: 12px; margin-left: 4px; }
 
     .company-id {
       font-family: monospace; font-size: 12px;
-      background: #f0f6ff; padding: 2px 6px;
-      border-radius: 4px; color: #052659;
+      background: var(--c-input-bg); padding: 2px 6px;
+      border-radius: 4px; color: var(--c-text);
     }
-    .muted { color: #5483B3; }
+    .muted { color: var(--c-text-muted); }
 
     .role-chip {
       display: inline-block; padding: 3px 10px; border-radius: 6px;
-      background: #C1E8FF; color: #052659;
+      background: var(--c-hover-bg); color: var(--c-text);
       font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.3px;
     }
@@ -122,14 +122,22 @@ import { FormsModule } from '@angular/forms';
 
     .actions-cell { display: flex; gap: 8px; align-items: center; }
     .btn-action {
-      padding: 6px 14px; border-radius: 6px; border: 1.5px solid #5483B3;
-      background: transparent; color: #052659;
+      padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--c-mid);
+      background: transparent; color: var(--c-text);
       font-size: 12px; font-weight: 600; font-family: inherit;
       cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
-    .btn-action:hover { background: #C1E8FF; }
+    .btn-action:hover { background: var(--c-hover-bg); }
     .btn-action.danger { border-color: #f5b7b1; color: #c0392b; }
     .btn-action.danger:hover { background: #fce7e7; }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 20px; }
+      .search-wrap { width: 100%; order: 1; }
+      .role-select { flex: 1; order: 2; }
+      .actions-cell { flex-direction: column; gap: 4px; align-items: flex-start; }
+      .btn-action { width: 100%; text-align: center; }
+    }
   `]
 })
 export class AdminPanelComponent implements OnInit {

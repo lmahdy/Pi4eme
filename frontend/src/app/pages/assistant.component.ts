@@ -58,28 +58,34 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   `,
   styles: [`
     .page-header { margin-bottom: 24px; }
-    .page-header h1 { font-size: 26px; font-weight: 800; color: #021024; margin: 0 0 6px; }
-    .page-subtitle { color: #5483B3; font-size: 14px; margin: 0; }
+    .page-header h1 { font-size: 26px; font-weight: 800; color: var(--c-text); margin: 0 0 6px; }
+    .page-subtitle { color: var(--c-text-muted); font-size: 14px; margin: 0; }
 
     .insight-card { position: relative; overflow: hidden; }
     .insight-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, #052659, #5483B3, #C1E8FF);
+      background: linear-gradient(90deg, var(--c-dark), var(--c-mid), var(--c-lightest));
     }
     .insight-icon { font-size: 28px; margin-bottom: 8px; }
-    .insight-card h3 { font-size: 15px; color: #021024; border-color: #C1E8FF !important; }
+    .insight-card h3 { font-size: 15px; color: var(--c-text); border-color: var(--c-divider) !important; }
 
     .insight-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 0; border-bottom: 1px solid rgba(193,232,255,0.5);
+      padding: 8px 0; border-bottom: 1px solid var(--c-divider);
     }
     .insight-row:last-child { border-bottom: none; }
-    .insight-label { font-size: 12px; font-weight: 600; color: #5483B3; text-transform: uppercase; letter-spacing: 0.4px; }
-    .insight-val { font-size: 14px; font-weight: 700; color: #021024; }
+    .insight-label { font-size: 12px; font-weight: 600; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .insight-val { font-size: 14px; font-weight: 700; color: var(--c-text); }
     .insight-val.best  { color: #059669; }
     .insight-val.worst { color: #c0392b; }
     .insight-val.risk  { color: #b7770d; }
-    .insight-val.score { color: #052659; font-size: 18px; }
+    .insight-val.score { color: var(--c-mid); font-size: 18px; }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 20px; }
+      .insight-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .grid { grid-template-columns: 1fr; }
+    }
   `],
 })
 export class AssistantComponent implements OnInit {

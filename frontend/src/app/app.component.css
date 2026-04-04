@@ -138,3 +138,86 @@
   margin: 0 auto;
   flex: 1;
 }
+
+/* ─── Header Actions (theme toggle + lang selector) ──────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(193, 232, 255, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(193, 232, 255, 0.6);
+  transform: rotate(15deg) scale(1.1);
+}
+
+.theme-icon {
+  font-size: 18px;
+  line-height: 1;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* ─── Responsive Adjustments ────────────────────────────────── */
+@media (max-width: 992px) {
+  .app-header {
+    height: auto;
+    padding: 12px 20px;
+    justify-content: center; /* Center everything if it wraps */
+    flex-direction: column;
+    gap: 12px;
+  }
+  .app-main {
+    padding: 20px 20px 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .nav a {
+    padding: 6px 10px;
+    font-size: 12.5px;
+  }
+  .brand-title {
+    font-size: 18px;
+  }
+  .brand-sub {
+    font-size: 9px;
+  }
+  .header-actions {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 10px 15px;
+  }
+  .app-main {
+    padding: 15px 15px 50px;
+  }
+  .nav {
+    gap: 4px;
+  }
+  .nav a {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}

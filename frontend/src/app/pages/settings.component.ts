@@ -7,16 +7,18 @@ import { AuthService } from '../services/auth.service';
 type SetupStep = 'idle' | 'qr' | 'confirming' | 'done';
 type DisableStep = 'idle' | 'confirming';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   template: `
     <div class="page-container">
-      <h2>Settings</h2>
+      <h2>{{ 'SETTINGS.TITLE' | translate }}</h2>
 
       <!-- ── Loading ── -->
-      <div *ngIf="loading" class="status-loading">Loading...</div>
+      <div *ngIf="loading" class="status-loading">{{ 'SETTINGS.LOADING' | translate }}</div>
 
       <div *ngIf="!loading" class="sections">
 
@@ -33,8 +35,8 @@ type DisableStep = 'idle' | 'confirming';
               </div>
             </div>
             <div class="section-info">
-              <h3>Account</h3>
-              <p class="section-desc">Manage your profile, photo, and company details.</p>
+              <h3>{{ 'SETTINGS.ACCOUNT_TITLE' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.ACCOUNT_DESC' | translate }}</p>
             </div>
             <span class="arrow" *ngIf="activeSection !== 'account'">&#8594;</span>
           </div>
@@ -49,54 +51,54 @@ type DisableStep = 'idle' | 'confirming';
                 <div *ngIf="!photoPreview" class="avatar-placeholder">
                   {{ userProfile?.name?.charAt(0)?.toUpperCase() || '?' }}
                 </div>
-                <div *ngIf="photoSaving" class="avatar-saving">Saving...</div>
+                <div *ngIf="photoSaving" class="avatar-saving">{{ 'SETTINGS.PHOTO_SAVING' | translate }}</div>
               </div>
               <div class="photo-actions">
                 <label class="btn btn-ghost upload-btn">
-                  Change Photo
+                  {{ 'SETTINGS.CHANGE_PHOTO' | translate }}
                   <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
                 </label>
-                <span class="photo-hint">Max 2 MB, JPG or PNG</span>
+                <span class="photo-hint">{{ 'SETTINGS.PHOTO_HINT' | translate }}</span>
               </div>
             </div>
 
             <!-- ── Personal Info ── -->
             <div class="info-block">
               <div class="info-block-header">
-                <h4>Personal Information</h4>
-                <button *ngIf="!editingUser" class="btn btn-ghost btn-sm" (click)="startEditUser()">Edit</button>
+                <h4>{{ 'SETTINGS.PERSONAL_INFO' | translate }}</h4>
+                <button *ngIf="!editingUser" class="btn btn-ghost btn-sm" (click)="startEditUser()">{{ 'SETTINGS.EDIT' | translate }}</button>
               </div>
 
               <div *ngIf="!editingUser" class="info-rows">
                 <div class="info-row">
-                  <span class="info-label">Name</span>
+                  <span class="info-label">{{ 'SETTINGS.NAME' | translate }}</span>
                   <span class="info-value">{{ userProfile?.name }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Email</span>
+                  <span class="info-label">{{ 'SETTINGS.EMAIL' | translate }}</span>
                   <span class="info-value">{{ userProfile?.email }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Role</span>
+                  <span class="info-label">{{ 'SETTINGS.ROLE' | translate }}</span>
                   <span class="info-value">{{ userProfile?.role }}</span>
                 </div>
               </div>
 
               <div *ngIf="editingUser" class="edit-form">
                 <div class="form-group">
-                  <label class="form-label">Name</label>
+                  <label class="form-label">{{ 'SETTINGS.NAME' | translate }}</label>
                   <input type="text" class="form-input" [(ngModel)]="editName" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Email</label>
+                  <label class="form-label">{{ 'SETTINGS.EMAIL' | translate }}</label>
                   <input type="email" class="form-input" [(ngModel)]="editEmail" />
                 </div>
                 <p *ngIf="userSaveError" class="error-msg">{{ userSaveError }}</p>
                 <div class="btn-row">
                   <button class="btn btn-primary" (click)="saveUser()" [disabled]="userSaving">
-                    {{ userSaving ? 'Saving...' : 'Save' }}
+                    {{ userSaving ? ('SETTINGS.SAVING' | translate) : ('SETTINGS.SAVE' | translate) }}
                   </button>
-                  <button class="btn btn-ghost" (click)="cancelEditUser()" [disabled]="userSaving">Cancel</button>
+                  <button class="btn btn-ghost" (click)="cancelEditUser()" [disabled]="userSaving">{{ 'SETTINGS.CANCEL' | translate }}</button>
                 </div>
               </div>
 
@@ -106,52 +108,52 @@ type DisableStep = 'idle' | 'confirming';
             <!-- ── Company Info (CompanyOwner only) ── -->
             <div *ngIf="isCompanyOwner && companyConfig" class="info-block">
               <div class="info-block-header">
-                <h4>Company Information</h4>
-                <button *ngIf="!editingCompany" class="btn btn-ghost btn-sm" (click)="startEditCompany()">Edit</button>
+                <h4>{{ 'SETTINGS.COMPANY_INFO' | translate }}</h4>
+                <button *ngIf="!editingCompany" class="btn btn-ghost btn-sm" (click)="startEditCompany()">{{ 'SETTINGS.EDIT' | translate }}</button>
               </div>
 
               <div *ngIf="!editingCompany" class="info-rows">
                 <div class="info-row">
-                  <span class="info-label">Company Name</span>
+                  <span class="info-label">{{ 'SETTINGS.COMPANY_NAME' | translate }}</span>
                   <span class="info-value">{{ companyConfig.companyName }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Tax Rate</span>
+                  <span class="info-label">{{ 'SETTINGS.TAX_RATE_SHORT' | translate }}</span>
                   <span class="info-value">{{ companyConfig.taxRate }}%</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Currency</span>
+                  <span class="info-label">{{ 'SETTINGS.CURRENCY' | translate }}</span>
                   <span class="info-value">{{ companyConfig.currency }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Notification Email</span>
+                  <span class="info-label">{{ 'SETTINGS.NOTIF_EMAIL' | translate }}</span>
                   <span class="info-value">{{ companyConfig.email }}</span>
                 </div>
               </div>
 
               <div *ngIf="editingCompany" class="edit-form">
                 <div class="form-group">
-                  <label class="form-label">Company Name</label>
+                  <label class="form-label">{{ 'SETTINGS.COMPANY_NAME' | translate }}</label>
                   <input type="text" class="form-input" [(ngModel)]="editCompanyName" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Tax Rate (%)</label>
+                  <label class="form-label">{{ 'SETTINGS.TAX_RATE' | translate }}</label>
                   <input type="number" class="form-input" [(ngModel)]="editTaxRate" min="0" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Currency</label>
+                  <label class="form-label">{{ 'SETTINGS.CURRENCY' | translate }}</label>
                   <input type="text" class="form-input" [(ngModel)]="editCurrency" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Notification Email</label>
+                  <label class="form-label">{{ 'SETTINGS.NOTIF_EMAIL' | translate }}</label>
                   <input type="email" class="form-input" [(ngModel)]="editCompanyEmail" />
                 </div>
                 <p *ngIf="companySaveError" class="error-msg">{{ companySaveError }}</p>
                 <div class="btn-row">
                   <button class="btn btn-primary" (click)="saveCompany()" [disabled]="companySaving">
-                    {{ companySaving ? 'Saving...' : 'Save' }}
+                    {{ companySaving ? ('SETTINGS.SAVING' | translate) : ('SETTINGS.SAVE' | translate) }}
                   </button>
-                  <button class="btn btn-ghost" (click)="cancelEditCompany()" [disabled]="companySaving">Cancel</button>
+                  <button class="btn btn-ghost" (click)="cancelEditCompany()" [disabled]="companySaving">{{ 'SETTINGS.CANCEL' | translate }}</button>
                 </div>
               </div>
 
@@ -168,11 +170,11 @@ type DisableStep = 'idle' | 'confirming';
           <div class="section-header">
             <div class="section-icon">🔐</div>
             <div class="section-info">
-              <h3>Two-Factor Authentication</h3>
-              <p class="section-desc">Require a code from Google Authenticator on each login.</p>
+              <h3>{{ 'SETTINGS.TWO_FACTOR' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.TWO_FACTOR_DESC' | translate }}</p>
             </div>
             <span class="badge" [class.badge-on]="twoFactorEnabled" [class.badge-off]="!twoFactorEnabled">
-              {{ twoFactorEnabled ? 'ON' : 'OFF' }}
+              {{ twoFactorEnabled ? ('SETTINGS.ON' | translate) : ('SETTINGS.OFF' | translate) }}
             </span>
           </div>
 
@@ -181,31 +183,31 @@ type DisableStep = 'idle' | 'confirming';
             <ng-container *ngIf="!twoFactorEnabled">
               <div *ngIf="enableStep === 'idle'" class="action-area">
                 <button class="btn btn-primary" (click)="startEnable(); $event.stopPropagation()" [disabled]="actionLoading">
-                  {{ actionLoading ? 'Generating...' : 'Enable 2FA' }}
+                  {{ actionLoading ? ('SETTINGS.GENERATING' | translate) : ('SETTINGS.ENABLE_2FA' | translate) }}
                 </button>
               </div>
 
               <div *ngIf="enableStep === 'qr'" class="qr-area" (click)="$event.stopPropagation()">
                 <p class="qr-instructions">
-                  1. Open <strong>Google Authenticator</strong> on your phone.<br>
-                  2. Tap <strong>+</strong> then <strong>Scan a QR code</strong>.<br>
-                  3. Scan the code below.
+                  <span [innerHTML]="'SETTINGS.QR_INSTRUCTIONS_1' | translate"></span><br>
+                  <span [innerHTML]="'SETTINGS.QR_INSTRUCTIONS_2' | translate"></span><br>
+                  <span [innerHTML]="'SETTINGS.QR_INSTRUCTIONS_3' | translate"></span>
                 </p>
                 <div class="qr-wrapper">
                   <img [src]="qrCode" alt="2FA QR Code" class="qr-image" />
                 </div>
                 <p class="manual-key">
-                  Can't scan? Enter this key manually:<br>
+                  {{ 'SETTINGS.CANT_SCAN' | translate }}<br>
                   <code>{{ manualSecret }}</code>
                 </p>
                 <button class="btn btn-primary" (click)="enableStep = 'confirming'">
-                  I've scanned it - Enter code
+                  {{ 'SETTINGS.SCANNED_BUTTON' | translate }}
                 </button>
-                <button class="btn btn-ghost" (click)="cancelEnable()">Cancel</button>
+                <button class="btn btn-ghost" (click)="cancelEnable()">{{ 'SETTINGS.CANCEL' | translate }}</button>
               </div>
 
               <div *ngIf="enableStep === 'confirming'" class="confirm-area" (click)="$event.stopPropagation()">
-                <p class="confirm-desc">Enter the 6-digit code from Google Authenticator to confirm setup:</p>
+                <p class="confirm-desc">{{ 'SETTINGS.CONFIRM_DESC' | translate }}</p>
                 <input
                   type="text"
                   class="otp-input"
@@ -219,28 +221,28 @@ type DisableStep = 'idle' | 'confirming';
                 <div class="btn-row">
                   <button class="btn btn-success" (click)="confirmEnable()"
                           [disabled]="actionLoading || confirmCode.length !== 6">
-                    {{ actionLoading ? 'Activating...' : 'Activate 2FA' }}
+                    {{ actionLoading ? ('SETTINGS.ACTIVATING' | translate) : ('SETTINGS.ACTIVATE_2FA' | translate) }}
                   </button>
                   <button class="btn btn-ghost" (click)="enableStep = 'qr'" [disabled]="actionLoading">
-                    Back
+                    {{ 'SETTINGS.BACK' | translate }}
                   </button>
                 </div>
               </div>
 
               <div *ngIf="enableStep === 'done'" class="success-banner">
-                2FA is now active. You'll be asked for a code on your next login.
+                {{ 'SETTINGS.2FA_ACTIVE_SUCCESS' | translate }}
               </div>
             </ng-container>
 
             <ng-container *ngIf="twoFactorEnabled">
               <div *ngIf="disableStep === 'idle'" class="action-area">
                 <button class="btn btn-danger" (click)="disableStep = 'confirming'; $event.stopPropagation()">
-                  Disable 2FA
+                  {{ 'SETTINGS.DISABLE_2FA' | translate }}
                 </button>
               </div>
 
               <div *ngIf="disableStep === 'confirming'" class="confirm-area" (click)="$event.stopPropagation()">
-                <p class="confirm-desc">Enter your current 6-digit code to confirm disabling 2FA:</p>
+                <p class="confirm-desc">{{ 'SETTINGS.CONFIRM_DISABLE_DESC' | translate }}</p>
                 <input
                   type="text"
                   class="otp-input"
@@ -253,10 +255,10 @@ type DisableStep = 'idle' | 'confirming';
                 <div class="btn-row">
                   <button class="btn btn-danger" (click)="confirmDisable()"
                           [disabled]="actionLoading || disableCode.length !== 6">
-                    {{ actionLoading ? 'Disabling...' : 'Confirm Disable' }}
+                    {{ actionLoading ? ('SETTINGS.DISABLING' | translate) : ('SETTINGS.CONFIRM_DISABLE' | translate) }}
                   </button>
                   <button class="btn btn-ghost" (click)="cancelDisable()" [disabled]="actionLoading">
-                    Cancel
+                    {{ 'SETTINGS.CANCEL' | translate }}
                   </button>
                 </div>
               </div>
@@ -271,8 +273,8 @@ type DisableStep = 'idle' | 'confirming';
           <div class="section-header">
             <div class="section-icon">📷</div>
             <div class="section-info">
-              <h3>Face Recognition</h3>
-              <p class="section-desc">Enroll or verify your face for quick passwordless login.</p>
+              <h3>{{ 'SETTINGS.FACE_REC' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.FACE_REC_DESC' | translate }}</p>
             </div>
             <span class="arrow">→</span>
           </div>
@@ -284,28 +286,28 @@ type DisableStep = 'idle' | 'confirming';
   styles: [`
     .page-container { max-width: 620px; margin: 40px auto; padding: 0 16px; }
 
-    h2 { margin: 0 0 24px; font-size: 24px; font-weight: 800; color: #021024; }
+    h2 { margin: 0 0 24px; font-size: 24px; font-weight: 800; color: var(--c-text); }
 
     .sections { display: flex; flex-direction: column; gap: 16px; }
 
     .section-card {
-      border: 1.5px solid rgba(84,131,179,0.2); border-radius: 14px; padding: 22px;
-      background: #fff; transition: all 0.2s;
-      box-shadow: 0 1px 4px rgba(2,16,36,0.06);
+      border: 1.5px solid var(--c-card-border); border-radius: 14px; padding: 22px;
+      background: var(--c-card); transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
     .section-card.clickable { cursor: pointer; }
-    .section-card.clickable:hover { box-shadow: 0 4px 16px rgba(2,16,36,0.1); border-color: #7DA0CA; }
-    .section-card.expanded { border-color: #5483B3; box-shadow: 0 4px 20px rgba(84,131,179,0.15); }
+    .section-card.clickable:hover { box-shadow: var(--shadow-md); border-color: var(--c-light); }
+    .section-card.expanded { border-color: var(--c-mid); box-shadow: var(--shadow-md); }
 
     .section-header {
       display: flex; align-items: center; gap: 14px;
     }
     .section-icon { font-size: 28px; flex-shrink: 0; }
     .section-info { flex: 1; }
-    .section-info h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #021024; }
-    .section-desc { margin: 0; font-size: 13px; color: #5483B3; line-height: 1.5; }
+    .section-info h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: var(--c-text); }
+    .section-desc { margin: 0; font-size: 13px; color: var(--c-text-muted); line-height: 1.5; }
 
-    .arrow { font-size: 20px; color: #7DA0CA; flex-shrink: 0; }
+    .arrow { font-size: 20px; color: var(--c-light); flex-shrink: 0; }
 
     .badge {
       font-size: 11px; font-weight: 700; padding: 4px 10px;
@@ -313,14 +315,14 @@ type DisableStep = 'idle' | 'confirming';
       letter-spacing: 0.4px; text-transform: uppercase;
     }
     .badge-on  { background: #d1fae5; color: #059669; border: 1px solid #a9dfbf; }
-    .badge-off { background: #f0f6ff; color: #5483B3; border: 1px solid #C1E8FF; }
+    .badge-off { background: var(--c-input-bg); color: var(--c-text-muted); border: 1px solid var(--c-input-border); }
 
     .section-content {
       margin-top: 18px; padding-top: 18px;
-      border-top: 1px solid rgba(193,232,255,0.6);
+      border-top: 1px solid var(--c-divider);
     }
 
-    .status-loading { padding: 40px; text-align: center; color: #7DA0CA; font-weight: 500; }
+    .status-loading { padding: 40px; text-align: center; color: var(--c-light); font-weight: 500; }
 
     /* ── Buttons ── */
     .btn {
@@ -336,8 +338,8 @@ type DisableStep = 'idle' | 'confirming';
     .btn-success:hover:not(:disabled) { background: linear-gradient(135deg, #047857, #059669); transform: translateY(-1px); }
     .btn-danger { background: linear-gradient(135deg, #c0392b, #ef4444); color: #fff; box-shadow: 0 2px 8px rgba(192,57,43,0.25); }
     .btn-danger:hover:not(:disabled) { background: linear-gradient(135deg, #922b21, #c0392b); transform: translateY(-1px); }
-    .btn-ghost { background: #f0f6ff; color: #052659; border: 1.5px solid #C1E8FF; }
-    .btn-ghost:hover:not(:disabled) { background: #C1E8FF; border-color: #7DA0CA; }
+    .btn-ghost { background: var(--c-input-bg); color: var(--c-text); border: 1.5px solid var(--c-input-border); }
+    .btn-ghost:hover:not(:disabled) { background: var(--c-hover-bg); border-color: var(--c-light); }
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn-sm { padding: 5px 12px; font-size: 12px; }
 
@@ -352,23 +354,23 @@ type DisableStep = 'idle' | 'confirming';
     }
     .qr-image { width: 200px; height: 200px; display: block; }
     .manual-key {
-      font-size: 12px; color: #5483B3; margin: 0;
-      background: #f0f6ff; padding: 12px; border-radius: 8px;
-      border: 1px solid #C1E8FF;
+      font-size: 12px; color: var(--c-text-muted); margin: 0;
+      background: var(--c-input-bg); padding: 12px; border-radius: 8px;
+      border: 1px solid var(--c-input-border);
     }
-    .manual-key code { font-family: monospace; letter-spacing: 1px; color: #021024; font-size: 13px; font-weight: 700; }
+    .manual-key code { font-family: monospace; letter-spacing: 1px; color: var(--c-text); font-size: 13px; font-weight: 700; }
 
     /* ── Confirm area ── */
     .confirm-area { display: flex; flex-direction: column; gap: 12px; }
-    .confirm-desc { margin: 0; font-size: 13px; color: #5483B3; }
+    .confirm-desc { margin: 0; font-size: 13px; color: var(--c-text-muted); }
 
     .otp-input {
       width: 150px; text-align: center; font-size: 26px; letter-spacing: 6px;
-      padding: 12px; border-radius: 10px; border: 2px solid #5483B3;
-      font-weight: 700; color: #052659; font-family: monospace;
-      background: #f0f6ff;
+      padding: 12px; border-radius: 10px; border: 2px solid var(--c-mid);
+      font-weight: 700; color: var(--c-text); font-family: monospace;
+      background: var(--c-input-bg);
     }
-    .otp-input:focus { outline: none; border-color: #052659; box-shadow: 0 0 0 3px rgba(84,131,179,0.2); }
+    .otp-input:focus { outline: none; border-color: var(--c-dark); box-shadow: 0 0 0 3px rgba(84,131,179,0.2); }
 
     .error-msg { color: #c0392b; font-size: 13px; margin: 0; }
 
@@ -398,7 +400,7 @@ type DisableStep = 'idle' | 'confirming';
     .photo-section {
       display: flex; align-items: center; gap: 16px;
       margin-bottom: 20px; padding-bottom: 18px;
-      border-bottom: 1px solid #f3f4f6;
+      border-bottom: 1px solid var(--c-divider);
     }
     .avatar-wrapper {
       position: relative; width: 72px; height: 72px; flex-shrink: 0;
@@ -421,12 +423,12 @@ type DisableStep = 'idle' | 'confirming';
     }
     .photo-actions { display: flex; flex-direction: column; gap: 6px; }
     .upload-btn { cursor: pointer; }
-    .photo-hint { font-size: 11px; color: #7DA0CA; }
+    .photo-hint { font-size: 11px; color: var(--c-text-muted); }
 
     /* ── Account: Info blocks ── */
     .info-block {
       margin-top: 18px; padding-top: 18px;
-      border-top: 1px solid rgba(193,232,255,0.5);
+      border-top: 1px solid var(--c-divider);
     }
     .info-block:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
     .info-block-header {
@@ -434,7 +436,7 @@ type DisableStep = 'idle' | 'confirming';
       margin-bottom: 12px;
     }
     .info-block-header h4 {
-      margin: 0; font-size: 14px; font-weight: 700; color: #021024;
+      margin: 0; font-size: 14px; font-weight: 700; color: var(--c-text);
     }
 
     .info-rows { display: flex; flex-direction: column; gap: 4px; }
@@ -443,22 +445,22 @@ type DisableStep = 'idle' | 'confirming';
       padding: 9px 12px; border-radius: 8px;
       transition: background 0.15s;
     }
-    .info-row:hover { background: #f0f6ff; }
-    .info-label { font-size: 13px; color: #5483B3; font-weight: 500; }
-    .info-value { font-size: 13px; color: #021024; font-weight: 600; }
+    .info-row:hover { background: var(--c-hover-bg); }
+    .info-label { font-size: 13px; color: var(--c-text-muted); font-weight: 500; }
+    .info-value { font-size: 13px; color: var(--c-text); font-weight: 600; }
 
     /* ── Account: Edit form ── */
     .edit-form { display: flex; flex-direction: column; gap: 14px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-label { font-size: 11.5px; color: #5483B3; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .form-label { font-size: 11.5px; color: var(--c-text-muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
     .form-input {
-      padding: 10px 14px; border: 1.5px solid #C1E8FF; border-radius: 8px;
-      font-size: 14px; color: #021024; font-family: inherit;
-      background: #f9fdff; outline: none; transition: all 0.18s;
+      padding: 10px 14px; border: 1.5px solid var(--c-input-border); border-radius: 8px;
+      font-size: 14px; color: var(--c-text); font-family: inherit;
+      background: var(--c-input-bg); outline: none; transition: all 0.18s;
     }
     .form-input:focus {
-      border-color: #5483B3;
-      background: #fff;
+      border-color: var(--c-mid);
+      background: var(--c-card);
       box-shadow: 0 0 0 3px rgba(84,131,179,0.15);
     }
 
@@ -466,6 +468,24 @@ type DisableStep = 'idle' | 'confirming';
       color: #059669; font-size: 13px; margin: 8px 0 0;
       background: #e9f7ef; padding: 10px 14px; border-radius: 8px;
       border: 1px solid #a9dfbf; font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .section-header { gap: 10px; }
+      .section-icon { font-size: 24px; }
+      .section-info h3 { font-size: 15px; }
+      .section-desc { font-size: 12px; }
+      .photo-section { flex-direction: column; align-items: flex-start; }
+      .photo-actions { width: 100%; }
+      .btn { width: 100%; }
+      .btn-row { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .page-container h2 { font-size: 20px; }
+      .info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .info-value { font-size: 12px; }
+      .otp-input { width: 100%; font-size: 20px; }
     }
   `],
 })

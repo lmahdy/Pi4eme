@@ -100,10 +100,10 @@ import { AuthService } from '../services/auth.service';
     .card {
       max-width: 440px;
       width: 100%;
-      background: rgba(255,255,255,0.98);
+      background: var(--c-card);
       border-radius: 20px;
       padding: 44px 40px;
-      box-shadow: 0 20px 60px rgba(2,16,36,0.4), 0 0 0 1px rgba(84,131,179,0.15);
+      box-shadow: 0 20px 60px rgba(2,16,36,0.4), 0 0 0 1px var(--c-card-border);
       text-align: center;
     }
 
@@ -117,13 +117,13 @@ import { AuthService } from '../services/auth.service';
       margin: 0 0 8px;
       font-size: 24px;
       font-weight: 800;
-      color: #021024;
+      color: var(--c-text);
     }
 
     .subtitle {
       margin: 0 0 28px;
       font-size: 13.5px;
-      color: #5483B3;
+      color: var(--c-text-muted);
       line-height: 1.6;
     }
 
@@ -143,7 +143,7 @@ import { AuthService } from '../services/auth.service';
     label {
       font-size: 11.5px;
       font-weight: 700;
-      color: #5483B3;
+      color: var(--c-text-muted);
       letter-spacing: 0.6px;
       text-transform: uppercase;
     }
@@ -158,18 +158,18 @@ import { AuthService } from '../services/auth.service';
       width: 100%;
       padding: 11px 44px 11px 14px;
       border-radius: 8px;
-      border: 1.5px solid #C1E8FF;
+      border: 1.5px solid var(--c-input-border);
       font-size: 14px;
       font-family: inherit;
-      color: #021024;
-      background: #f9fdff;
+      color: var(--c-text);
+      background: var(--c-input-bg);
       transition: all 0.18s ease;
       outline: none;
       box-sizing: border-box;
     }
     input:focus {
-      border-color: #5483B3;
-      background: #fff;
+      border-color: var(--c-mid);
+      background: var(--c-card);
       box-shadow: 0 0 0 3px rgba(84,131,179,0.15);
     }
 
@@ -248,18 +248,25 @@ import { AuthService } from '../services/auth.service';
     .back-link {
       text-align: center;
       font-size: 13px;
-      color: #5483B3;
+      color: var(--c-text-muted);
       text-decoration: none;
       font-weight: 600;
       transition: color 0.2s;
     }
-    .back-link:hover { color: #021024; }
+    .back-link:hover { color: var(--c-text); }
 
     .error-msg {
       font-size: 12px;
       color: #c53030;
       margin: 0;
       text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 30px 20px; }
+      h2 { font-size: 20px; }
+      .icon-wrap { font-size: 40px; }
+      .btn-primary { font-size: 14px; padding: 11px 16px; }
     }
   `],
 })

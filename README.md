@@ -18,3 +18,6 @@ Installation : Exécution de npm install dans les dossiers backend et frontend.
 Lancement :
 Backend en mode développement (npm run start:dev).
 Frontend Angular (ng serve).
+
+chatbot:
+npm install @google/generative-ai
