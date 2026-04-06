@@ -6,13 +6,14 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { CsvUploadComponent } from '../components/csv-upload.component';
 import { CsvMappingComponent } from '../components/csv-mapping.component';
 import { DynamicFormComponent, FormFieldDef } from '../components/dynamic-form.component';
+import { InvoiceImageUploadComponent, InvoiceExtraction } from '../components/invoice-image-upload.component';
 import { ApiService } from '../services/api.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchases-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, CsvUploadComponent, CsvMappingComponent, DynamicFormComponent, NgChartsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, CsvUploadComponent, CsvMappingComponent, DynamicFormComponent, InvoiceImageUploadComponent, NgChartsModule, TranslateModule],
   template: `
     <div class="page-header">
       <h1>Purchases Dashboard</h1>
@@ -115,6 +116,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     <!-- Upload + Manual Entry Row -->
     <div class="grid grid-2">
       <div class="card">
+        <div class="card-icon">📷</div>
+        <h2>Upload Invoice Image</h2>
+        <p class="hint">Upload a purchase invoice and we'll extract the data automatically</p>
+        <app-invoice-image-upload [type]="'purchases'" (dataExtracted)="onInvoiceImageExtracted($event)"></app-invoice-image-upload>
+      </div>
+      <div class="card">
         <div class="card-icon">CSV</div>
         <h2>Import Purchases CSV</h2>
         <p class="hint">Supports ANY column names - you'll map them in the next step</p>
@@ -124,6 +131,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
           <p *ngFor="let e of uploadErrors" class="val-err">{{ e }}</p>
         </div>
       </div>
+    </div>
+
+    <!-- Manual Entry -->
+    <div class="grid grid-1">
       <div class="card">
         <div class="card-icon">+</div>
         <h2>Add Purchase Manually</h2>
@@ -396,5 +407,38 @@ export class PurchasesDashboardComponent implements OnInit {
   deletePurchase(id: string) {
     if (!confirm('Delete this purchase?')) return;
     this.api.deletePurchase(id).subscribe(() => this.loadAll());
+  }
+
+  // ── Invoice Image Upload Handler ───────────────────────────────────
+  onInvoiceImageExtracted(extraction: InvoiceExtraction) {
+    if (!extraction || !extraction.rows || extraction.rows.length === 0) {
+      this.uploadMsg = 'No data extracted. Please try another image.';
+      this.uploadError = true;
+      return;
+    }
+
+    // Filter valid rows only (ML safety: only complete data)
+    const validRows = extraction.rows.filter(r => r.isValid);
+    if (validRows.length === 0) {
+      this.uploadMsg = 'No valid rows to import. Please fix the issues and try again.';
+      this.uploadError = true;
+      return;
+    }
+
+    // Send valid rows through ETL-validated confirm endpoint
+    this.api.confirmPurchasesOcr(validRows).subscribe({
+      next: (res: any) => {
+        const inv = extraction.quality.invalidRows;
+        this.uploadMsg = `Imported ${res.imported} purchases from invoice (quality: ${res.quality?.qualityPercent || extraction.quality.qualityPercent}%)`;
+        if (inv > 0) this.uploadMsg += ` | ${inv} row(s) ignored`;
+        this.uploadError = false;
+        this.uploadErrors = [...(res.warnings || []), ...(res.errors || [])];
+        this.loadAll();
+      },
+      error: (err) => {
+        this.uploadMsg = err?.error?.message || 'Import failed';
+        this.uploadError = true;
+      },
+    });
   }
 }

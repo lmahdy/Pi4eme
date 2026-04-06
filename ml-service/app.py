@@ -15,9 +15,15 @@ from flask_cors import CORS
 import numpy as np
 import re
 import os
+import sys
+import traceback
 import tempfile
 from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
+
+# ── Tesseract path configuration (Windows) ────────────────────────────
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r"D:\Programes\Houni\tesseract.exe"
 
 app = Flask(__name__)
 CORS(app)
@@ -546,86 +552,350 @@ def health_check():
 @app.route('/ocr/extract', methods=['POST'])
 def ocr_extract():
     """
-    Accepts an image file upload, runs Tesseract OCR to extract text,
-    then attempts to parse structured data (rows with product, qty, price, date).
-    Returns { text: string, parsedRows: [{...}] }
+    POST /ocr/extract
+    Accepts an image file, runs Tesseract OCR, then parses structured invoice data.
+    Returns { text, parsedRows, metadata }
     """
-    if 'file' not in request.files:
-        return jsonify({'text': '', 'parsedRows': [], 'error': 'No file uploaded'}), 400
-
-    file = request.files['file']
+    print("=" * 60)
+    print("[OCR] Incoming request")
+    print(f"[OCR] FILES keys: {list(request.files.keys())}")
+    sys.stdout.flush()
 
     try:
-        import pytesseract
-        from PIL import Image
-    except ImportError:
-        return jsonify({
-            'text': '',
-            'parsedRows': [],
-            'error': 'OCR dependencies not installed. Run: pip install pytesseract Pillow'
-        }), 500
+        # Accept both 'file' and 'image' keys
+        file = request.files.get('file') or request.files.get('image')
+        if not file:
+            print("[OCR] ERROR: No file in request.files")
+            return jsonify({'text': '', 'parsedRows': [], 'error': 'No file uploaded'}), 400
 
-    # Save to temp file and run OCR
-    try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp:
+        print(f"[OCR] Filename: {file.filename}")
+        print(f"[OCR] Content-Type: {file.content_type}")
+        sys.stdout.flush()
+
+        from PIL import Image, ImageFilter
+
+        # Verify Tesseract is reachable
+        tess_version = pytesseract.get_tesseract_version()
+        print(f"[OCR] Tesseract version: {tess_version}")
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename or '.png')[1]) as tmp:
             file.save(tmp)
             tmp_path = tmp.name
 
+        print(f"[OCR] Temp file saved: {tmp_path} ({os.path.getsize(tmp_path)} bytes)")
+
         image = Image.open(tmp_path)
+        print(f"[OCR] Image opened: size={image.size}, mode={image.mode}")
+
+        # Preprocess: convert to RGB first (handles palette/RGBA), then grayscale + sharpen
+        if image.mode in ('P', 'RGBA', 'LA'):
+            image = image.convert('RGB')
+        image = image.convert('L').filter(ImageFilter.SHARPEN)
+
         text = pytesseract.image_to_string(image)
         os.unlink(tmp_path)
+
+        print(f"[OCR] Raw text length: {len(text)} chars, lines: {len(text.strip().splitlines())}")
+        print(f"[OCR] Raw text:\n{text[:500]}")
+        sys.stdout.flush()
+
+        metadata = extract_invoice_metadata(text)
+        parsed_rows = parse_invoice_text(text, metadata)
+
+        print(f"[OCR] Metadata: {metadata}")
+        print(f"[OCR] Parsed rows: {len(parsed_rows)}")
+        for i, row in enumerate(parsed_rows):
+            print(f"[OCR]   row {i}: {row['product']} | qty={row['quantity']} | unit={row['unitPrice']} | total={row['totalAmount']}")
+
+        print("[OCR] SUCCESS")
+        sys.stdout.flush()
+
+        return jsonify({
+            'text': text,
+            'parsedRows': parsed_rows,
+            'metadata': metadata,
+        })
+
     except Exception as e:
+        print(f"[OCR] EXCEPTION: {str(e)}")
+        traceback.print_exc()
+        sys.stdout.flush()
         return jsonify({'text': '', 'parsedRows': [], 'error': f'OCR failed: {str(e)}'}), 500
 
-    # Attempt to parse structured data from the extracted text
-    parsed_rows = parse_invoice_text(text)
 
-    return jsonify({
-        'text': text,
-        'parsedRows': parsed_rows,
-    })
+# ── Invoice metadata extraction ──────────────────────────────────
+
+def extract_invoice_metadata(text):
+    """Extract date, supplier/customer name from invoice header area."""
+    metadata = {'date': None, 'customer': None, 'supplier': None}
+
+    # Date patterns (EN + FR)
+    date_patterns = [
+        r'\b(20\d{2}-\d{2}-\d{2})\b',
+        r'\b(\d{1,2}/\d{1,2}/20\d{2})\b',
+        r'\b(\d{1,2}-\d{1,2}-20\d{2})\b',
+        r'\b(\d{1,2}\.\d{1,2}\.20\d{2})\b',
+    ]
+    for pattern in date_patterns:
+        match = re.search(pattern, text)
+        if match:
+            metadata['date'] = match.group(1)
+            break
+
+    # Customer / Supplier detection via keywords
+    lines = text.split('\n')
+    customer_kw = ['customer', 'client', 'bill to', 'sold to', 'acheteur', 'destinataire']
+    supplier_kw = ['supplier', 'vendor', 'from', 'seller', 'fournisseur', 'vendeur', 'emetteur']
+
+    for i, line in enumerate(lines[:15]):
+        lower = line.lower().strip()
+        for kw in customer_kw:
+            if kw in lower:
+                name = re.sub(r'(?i)' + re.escape(kw) + r'[\s:]*', '', line).strip()
+                if not name and i + 1 < len(lines):
+                    name = lines[i + 1].strip()
+                if name and len(name) > 1:
+                    metadata['customer'] = name
+                break
+        for kw in supplier_kw:
+            if kw in lower:
+                name = re.sub(r'(?i)' + re.escape(kw) + r'[\s:]*', '', line).strip()
+                if not name and i + 1 < len(lines):
+                    name = lines[i + 1].strip()
+                if name and len(name) > 1:
+                    metadata['supplier'] = name
+                break
+
+    # Fallback: first non-numeric line > 10 chars as supplier
+    if not metadata['supplier']:
+        for line in lines[:5]:
+            cleaned = line.strip()
+            if len(cleaned) > 10 and not any(c.isdigit() for c in cleaned[:5]):
+                metadata['supplier'] = cleaned
+                break
+
+    return metadata
 
 
-def parse_invoice_text(text):
-    """
-    Simple heuristic parser for invoice text.
-    Looks for lines with: product name, quantity, price patterns.
-    """
+# ── Invoice text parsing ─────────────────────────────────────────
+
+# Keywords that indicate header/footer/summary lines (not product rows)
+SKIP_KEYWORDS = [
+    'invoice', 'facture', 'date:', 'date :', 'total:', 'total :',
+    'sub total', 'sous total', 'subtotal',
+    'quantity', 'qty', 'qte', 'price', 'prix', 'amount', 'montant',
+    'description', 'designation', 'please', 'thank', 'merci',
+    'note:', 'tax ', 'tax(', 'tax:', 'tva', 'shipping', 'livraison',
+    'payment', 'paiement',
+    'bill to', 'sold to', 'ship to', 'customer:', 'client:',
+    'supplier:', 'fournisseur', 'vendeur', 'remise', 'discount',
+    'grand total', 'total general', 'net total', 'page ',
+]
+
+# Column-header keywords: if 2+ appear on the same line, skip it
+HEADER_KEYWORDS = [
+    'quantity', 'qty', 'qte', 'price', 'prix', 'amount', 'montant',
+    'description', 'designation', 'item', 'product',
+]
+
+# Regex patterns for lines that are clearly not product rows
+SKIP_LINE_PATTERNS = [
+    r'^\s*[-=_*]{3,}\s*$',
+    r'^\s*\d+\s*/\s*\d+\s*$',
+    r'^\s*\d{1,5}\s+\w+\s+(ave|st|rd|blvd|street|road|suite|floor)',
+    r'^\s*#?\d{3,}[-\s]?\d{3,}',
+    r'^\s*(tel|phone|fax|email|web|www)\b',
+    r'(?:^|\s)date\s*:?\s*\d',
+    r'^\s*(due|issued|paid)\s',
+]
+
+
+def _is_skip_line(line):
+    """Check if a line is a header, footer, or summary — not a product row."""
+    lower = line.lower().strip()
+
+    # Column-header detection: "Item  Qty  Price  Total"
+    for hkw in HEADER_KEYWORDS:
+        if lower.startswith(hkw):
+            if sum(1 for h in HEADER_KEYWORDS if h in lower) >= 2:
+                return True
+
+    # Keyword-based skip (smart: allows products that happen to contain a keyword)
+    for kw in SKIP_KEYWORDS:
+        if kw in lower:
+            kw_pos = lower.index(kw)
+            after_kw = lower[kw_pos + len(kw):].strip()
+            if len(after_kw) < 5:
+                return True
+            if kw_pos < 3:
+                prices_after = re.findall(r'\$[\d,.]+|\d+\.\d{2}', after_kw)
+                if len(prices_after) <= 1:
+                    return True
+
+    # Regex pattern skip
+    for pattern in SKIP_LINE_PATTERNS:
+        if re.search(pattern, lower):
+            return True
+
+    return False
+
+
+def parse_invoice_text(text, metadata):
+    """Parse OCR invoice text into structured rows."""
     rows = []
-    lines = text.strip().split('\n')
-
-    for line in lines:
+    for line in text.strip().split('\n'):
         line = line.strip()
-        if not line:
+        if not line or len(line) < 3:
             continue
-
-        # Try to find numbers in the line (potential qty and price)
-        numbers = re.findall(r'[\d]+(?:[\.,]\d+)?', line)
-        if len(numbers) >= 2:
-            # Remove numbers from line to get the text part (product name)
-            text_part = re.sub(r'[\d]+(?:[\.,]\d+)?', '', line).strip()
-            text_part = re.sub(r'[|$€£]', '', text_part).strip()
-            text_part = re.sub(r'\s+', ' ', text_part).strip(' -:,.')
-
-            if text_part and len(text_part) > 1:
-                # Last two numbers are likely quantity and price
-                qty_str = numbers[-2].replace(',', '.')
-                price_str = numbers[-1].replace(',', '.')
-
-                try:
-                    qty = float(qty_str)
-                    price = float(price_str)
-                    if qty > 0 and price > 0:
-                        rows.append({
-                            'item': text_part,
-                            'quantity': qty,
-                            'unitPrice': price,
-                            'totalAmount': round(qty * price, 2),
-                        })
-                except ValueError:
-                    continue
-
+        if _is_skip_line(line):
+            continue
+        parsed = parse_invoice_line(line, metadata)
+        if parsed:
+            rows.append(parsed)
     return rows
+
+
+def parse_invoice_line(line, metadata):
+    """
+    Parse a single invoice line using right-to-left number assignment.
+
+    Strategy:
+    1. Find all number tokens with their string positions
+    2. Classify as "price" ($X.XX or X.XX with 2 decimals) vs "plain integer"
+    3. Rightmost 2 price tokens → totalAmount, unitPrice
+    4. Rightmost plain integer before unitPrice (with text to its left) → quantity
+    5. Everything left of quantity position → product name
+    """
+    line = line.strip()
+    if not line or len(line) < 3:
+        return None
+
+    cleaned = re.sub(r'[|]', '  ', line)
+
+    # Find all number-like tokens with positions
+    tokens = []
+    for m in re.finditer(r'\$?[\d,]+(?:\.\d+)?', cleaned):
+        raw = m.group()
+        num_str = raw.replace('$', '').replace(',', '')
+        try:
+            val = float(num_str)
+        except ValueError:
+            continue
+        if val <= 0:
+            continue
+        is_price = ('$' in raw) or ('.' in raw and len(raw.split('.')[-1]) == 2)
+        tokens.append({
+            'raw': raw, 'val': val, 'start': m.start(), 'end': m.end(),
+            'is_price': is_price,
+        })
+
+    if len(tokens) < 2:
+        return None
+
+    tokens.sort(key=lambda t: t['start'])
+    price_tokens = [t for t in tokens if t['is_price']]
+
+    total_amount = None
+    unit_price = None
+    qty = None
+    name_end_pos = 0
+
+    if len(price_tokens) >= 2:
+        # Best case: 2+ price tokens (e.g. "$15.00  $30.00")
+        total_amount = price_tokens[-1]['val']
+        unit_price = price_tokens[-2]['val']
+        name_end_pos = price_tokens[-2]['start']
+
+        # Find quantity: rightmost plain integer before unitPrice with text to its left
+        for t in reversed(tokens):
+            if t['start'] >= price_tokens[-2]['start']:
+                continue
+            if not t['is_price'] and t['val'] == int(t['val']) and t['val'] < 10000:
+                text_left = cleaned[:t['start']].strip()
+                alpha_left = re.sub(r'[^a-zA-Z]', '', text_left)
+                if len(alpha_left) >= 2:
+                    qty = t['val']
+                    name_end_pos = t['start']
+                    break
+
+        if qty is None:
+            # Infer quantity from total / unitPrice
+            if unit_price > 0:
+                inferred = total_amount / unit_price
+                if abs(inferred - round(inferred)) < 0.01 and inferred > 0:
+                    qty = round(inferred)
+                else:
+                    qty = 1
+            else:
+                qty = 1
+
+    elif len(price_tokens) == 1:
+        # One price token — look for a plain integer as quantity
+        price_t = price_tokens[0]
+        plain_before = [t for t in tokens if t['start'] < price_t['start'] and not t['is_price']]
+        if plain_before:
+            qty_t = plain_before[-1]
+            qty = qty_t['val']
+            unit_price = price_t['val']
+            total_amount = round(qty * unit_price, 2)
+            name_end_pos = qty_t['start']
+        else:
+            return None
+
+    else:
+        # No price tokens — positional: last 3 numbers are qty, unit, total
+        if len(tokens) >= 3:
+            qty = tokens[-3]['val']
+            unit_price = tokens[-2]['val']
+            total_amount = tokens[-1]['val']
+            name_end_pos = tokens[-3]['start']
+        elif len(tokens) == 2:
+            if tokens[0]['val'] <= tokens[1]['val']:
+                qty = tokens[0]['val']
+                total_amount = tokens[1]['val']
+                unit_price = total_amount / qty if qty > 0 else total_amount
+            else:
+                qty = tokens[1]['val']
+                total_amount = tokens[0]['val']
+                unit_price = total_amount / qty if qty > 0 else total_amount
+            name_end_pos = tokens[0]['start']
+
+    if qty is None or qty <= 0 or unit_price is None:
+        return None
+
+    # Extract product name: everything left of the first assigned numeric token
+    product = cleaned[:name_end_pos]
+    product = re.sub(r'[|$€£¥@×*#\t]+', ' ', product)
+    product = re.sub(r'\s+', ' ', product).strip(' -:,.')
+    product = re.sub(r'\s*x\s*$', '', product, flags=re.IGNORECASE)
+    product = re.sub(r'\s*\d*\s*pcs?\s*$', '', product, flags=re.IGNORECASE)
+    product = product.strip()
+
+    if not product or len(product) < 2:
+        return None
+    if qty > 99999:
+        return None
+
+    # Validate total ≈ qty × unitPrice (allow 5% OCR variance)
+    expected = round(qty * unit_price, 2)
+    if total_amount and expected > 0:
+        if abs(total_amount - expected) / max(expected, 0.01) > 0.05:
+            total_amount = expected
+    if total_amount is None:
+        total_amount = expected
+
+    return {
+        'product': product,
+        'item': product,
+        'quantity': round(qty, 2),
+        'unitPrice': round(unit_price, 2),
+        'unitCost': round(unit_price, 2),
+        'totalAmount': round(total_amount, 2),
+        'totalCost': round(total_amount, 2),
+        'date': metadata.get('date'),
+        'customer': metadata.get('customer'),
+        'supplier': metadata.get('supplier'),
+    }
 
 
 if __name__ == '__main__':

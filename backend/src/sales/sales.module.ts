@@ -5,12 +5,14 @@ import { Sale, SaleSchema } from './schemas/sale.schema';
 import { SalesService } from './sales.service';
 import { SalesController } from './sales.controller';
 import { EtlModule } from '../etl/etl.module';
+import { OcrModule } from '../ocr/ocr.module';
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Sale.name, schema: SaleSchema }]),
         MulterModule.register({ storage: undefined }),
         EtlModule,
+        OcrModule,
     ],
     controllers: [SalesController],
     providers: [SalesService],

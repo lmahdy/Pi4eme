@@ -76,9 +76,22 @@ export class SalesController {
         return this.svc.revenueByCustomer(req.user.companyId);
     }
 
+    // POST /sales/upload-image — Upload invoice image, extract via OCR, return preview
+    @Post('upload-image')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+        return this.svc.uploadInvoiceImage(file.buffer, file.originalname);
+    }
+
+    // POST /sales/ocr/confirm — Save user-reviewed OCR rows through ETL pipeline
+    @Post('ocr/confirm')
+    async confirmOcr(@Body() body: { rows: any[] }, @Req() req: any) {
+        return this.svc.confirmOcrRows(req.user.companyId, body.rows);
+    }
+
     // DELETE /sales/:id
     @Delete(':id')
-    remove(@Param('id') id: string, @Req() req: any) {
+    async remove(@Param('id') id: string, @Req() req: any) {
         return this.svc.delete(req.user.companyId, id);
     }
 }
