@@ -25,7 +25,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
         <form *ngIf="!submitted" (ngSubmit)="submit()">
           <div class="form-group">
-            <label>{{ 'NAME' | translate }}</label>
+            <label>{{ 'SIGNUP.NAME' | translate }}</label>
             <input type="text" [(ngModel)]="name" name="name" required placeholder="John" />
             <span class="error-msg" *ngIf="name && !isValidName()">⚠️ Name must have at least 2 letters and cannot be exactly two words</span>
           </div>

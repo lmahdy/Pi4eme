@@ -131,6 +131,10 @@ export class ApiService {
     return this.http.delete(`${this.apiBase}/sales/${id}`);
   }
 
+  deleteSalesByCustomer(customer: string) {
+    return this.http.delete(`${this.apiBase}/sales/by-customer/${customer}`);
+  }
+
   // ── OCR ──────────────────────────────────────────────────────
   ocrInvoice(file: File) {
     const fd = new FormData();

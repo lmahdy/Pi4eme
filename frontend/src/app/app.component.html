@@ -12,11 +12,13 @@
         <ng-container *ngIf="!(isAdmin$ | async)">
           <a routerLink="/sales" routerLinkActive="active-link">{{ "NAV.SALES" | translate }}</a>
           <a routerLink="/purchases" routerLinkActive="active-link">{{ "NAV.PURCHASES" | translate }}</a>
+          <a routerLink="/customers" routerLinkActive="active-link">{{ "NAV.CUSTOMERS" | translate }}</a>
+          <a routerLink="/suppliers" routerLinkActive="active-link">{{ "NAV.SUPPLIERS" | translate }}</a>
           <a routerLink="/report" routerLinkActive="active-link">{{ "NAV.REPORT" | translate }}</a>
           <a routerLink="/assistant" routerLinkActive="active-link">{{ "NAV.ASSISTANT" | translate }}</a>
         </ng-container>
         <a routerLink="/admin" routerLinkActive="active-link" *ngIf="isAdmin$ | async">{{ "NAV.ADMIN" | translate }}</a>
-        <a routerLink="/settings" routerLinkActive="active-link">Settings</a>
+        <a routerLink="/settings" routerLinkActive="active-link">{{ "NAV.SETTINGS" | translate }}</a>
         <a routerLink="/login" (click)="logout()">{{ "NAV.LOGOUT" | translate }}</a>
       </div>
     </nav>

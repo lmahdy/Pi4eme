@@ -44,4 +44,16 @@ export class SupplierService {
     const result = await this.supplierModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException(`Supplier #${id} not found`);
   }
+
+  async findByName(name: string): Promise<Supplier | null> {
+    return this.supplierModel.findOne({ name: { $regex: new RegExp(name, 'i') } }).exec();
+  }
+
+  async deleteByName(name: string): Promise<void> {
+    const supplier = await this.findByName(name);
+    if (!supplier) {
+      throw new NotFoundException(`Supplier with name "${name}" not found`);
+    }
+    await this.supplierModel.findByIdAndDelete(supplier._id).exec();
+  }
 }
