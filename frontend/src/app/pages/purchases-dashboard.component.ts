@@ -16,8 +16,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   imports: [CommonModule, FormsModule, CsvUploadComponent, CsvMappingComponent, DynamicFormComponent, InvoiceImageUploadComponent, NgChartsModule, TranslateModule],
   template: `
     <div class="page-header">
-      <h1>Purchases Dashboard</h1>
-      <p class="page-subtitle">Track your purchases, suppliers, and spending analytics</p>
+      <h1>{{ 'PURCHASES_PAGE.TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'PURCHASES_PAGE.SUBTITLE' | translate }}</p>
     </div>
 
     <!-- KPI Cards -->
@@ -117,14 +117,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     <div class="grid grid-2">
       <div class="card">
         <div class="card-icon">📷</div>
-        <h2>Upload Invoice Image</h2>
-        <p class="hint">Upload a purchase invoice and we'll extract the data automatically</p>
+        <h2>{{ 'PURCHASES_PAGE.UPLOAD_INVOICE_IMAGE' | translate }}</h2>
+        <p class="hint">{{ 'PURCHASES_PAGE.UPLOAD_INVOICE_HINT' | translate }}</p>
         <app-invoice-image-upload [type]="'purchases'" (dataExtracted)="onInvoiceImageExtracted($event)"></app-invoice-image-upload>
       </div>
       <div class="card">
         <div class="card-icon">CSV</div>
-        <h2>Import Purchases CSV</h2>
-        <p class="hint">Supports ANY column names - you'll map them in the next step</p>
+        <h2>{{ 'PURCHASES_PAGE.IMPORT_CSV' | translate }}</h2>
+        <p class="hint">{{ 'PURCHASES_PAGE.IMPORT_CSV_HINT' | translate }}</p>
         <app-csv-upload (fileSelected)="onCsvSelected($event)"></app-csv-upload>
         <div *ngIf="uploadMsg" class="status-msg" [class.error]="uploadError">{{ uploadMsg }}</div>
         <div *ngIf="uploadErrors.length" class="validation-errors">
@@ -137,11 +137,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     <div class="grid grid-1">
       <div class="card">
         <div class="card-icon">+</div>
-        <h2>Add Purchase Manually</h2>
+        <h2>{{ 'PURCHASES_PAGE.ADD_MANUAL' | translate }}</h2>
         <app-dynamic-form
           [fields]="formFields"
           [loading]="manualLoading"
-          submitLabel="+ Add Purchase"
+          [submitLabel]="'PURCHASES_PAGE.ADD_MANUAL_SUBMIT' | translate"
           (formSubmitted)="addManual($event)">
         </app-dynamic-form>
         <div *ngIf="manualMsg" class="status-msg" [class.error]="manualError">{{ manualMsg }}</div>
@@ -170,13 +170,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     <!-- Charts -->
     <div class="grid grid-2" *ngIf="kpis && kpis.count > 0">
       <div class="card">
-        <h3>Purchases Over Time</h3>
+        <h3>{{ 'PURCHASES_PAGE.OVER_TIME' | translate }}</h3>
         <div class="chart-wrapper">
           <canvas baseChart [data]="lineChartData" type="line" [options]="lineChartOptions"></canvas>
         </div>
       </div>
       <div class="card">
-        <h3>Purchases by Supplier</h3>
+        <h3>{{ 'PURCHASES_PAGE.BY_SUPPLIER' | translate }}</h3>
         <div class="chart-wrapper">
           <canvas baseChart [data]="barChartData" type="bar" [options]="barChartOptions"></canvas>
         </div>
@@ -184,19 +184,19 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     </div>
     <div class="grid grid-2" *ngIf="kpis && kpis.count > 0">
       <div class="card">
-        <h3>Purchases by Category</h3>
+        <h3>{{ 'PURCHASES_PAGE.BY_CATEGORY' | translate }}</h3>
         <div class="chart-wrapper doughnut-wrapper">
           <canvas baseChart [data]="doughnutData" type="doughnut" [options]="doughnutOptions"></canvas>
         </div>
       </div>
       <div class="card" *ngIf="purchases.length > 0">
-        <h3>Recent Purchases</h3>
+        <h3>{{ 'PURCHASES.RECENT' | translate }}</h3>
         <div class="table-scroll">
           <table class="table">
             <thead>
               <tr>
-                <th>Date</th><th>Supplier</th><th>Item</th><th>Category</th>
-                <th>Qty</th><th>Unit Cost</th><th>Total</th><th></th>
+                <th>{{ 'COMMON.DATE' | translate }}</th><th>{{ 'PURCHASES_PAGE.SUPPLIER' | translate }}</th><th>{{ 'COMMON.ITEM' | translate }}</th><th>{{ 'PURCHASES_PAGE.CATEGORY' | translate }}</th>
+                <th>{{ 'COMMON.QTY' | translate }}</th><th>{{ 'PURCHASES_PAGE.UNIT_COST' | translate }}</th><th>{{ 'COMMON.TOTAL' | translate }}</th><th></th>
               </tr>
             </thead>
             <tbody>
@@ -218,12 +218,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
     <div class="card empty-state" *ngIf="!loading && kpis && kpis.count === 0">
       <div class="empty-icon">--</div>
-      <h3>No purchases yet</h3>
-      <p>Upload a CSV file or add purchases manually to see your dashboard come to life.</p>
+      <h3>{{ 'PURCHASES_PAGE.EMPTY_TITLE' | translate }}</h3>
+      <p>{{ 'PURCHASES_PAGE.EMPTY_DESC' | translate }}</p>
     </div>
     <div class="card loading-state" *ngIf="loading">
       <div class="spinner"></div>
-      <p>Loading your purchase data...</p>
+      <p>{{ 'PURCHASES_PAGE.LOADING' | translate }}</p>
     </div>
   `,
   styles: [`
@@ -312,7 +312,7 @@ export class PurchasesDashboardComponent implements OnInit {
   // Dynamic form fields
   formFields: FormFieldDef[] = [
     { name: 'date', label: 'Date', type: 'date', required: true, default: new Date().toISOString().slice(0, 10) },
-    { name: 'supplier', label: 'Supplier', type: 'text', required: false, placeholder: 'e.g. Acme Corp (optional)' },
+    { name: 'supplier', label: 'Supplier', type: 'text', required: false, placeholder: 'e.g. Acme Corp (optional)', suggestions: [] },
     { name: 'item', label: 'Item', type: 'text', required: true, placeholder: 'e.g. Office Paper A4' },
     { name: 'category', label: 'Category', type: 'text', required: false, placeholder: 'e.g. Office Supplies' },
     { name: 'quantity', label: 'Quantity', type: 'number', required: true, default: 1 },
@@ -336,9 +336,36 @@ export class PurchasesDashboardComponent implements OnInit {
   loadAll() {
     this.loading = true;
     this.api.getPurchaseKpis().subscribe({ next: (k) => { this.kpis = k; this.loading = false; }, error: () => { this.loading = false; } });
-    this.api.getPurchases().subscribe((d) => (this.purchases = d));
+    this.api.getPurchases().subscribe((d) => {
+      this.purchases = d;
+      this.updateSupplierSuggestions();
+    });
     this.loadCharts();
     this.loadAi();
+  }
+
+  private updateSupplierSuggestions() {
+    // Get suppliers from purchase data
+    const fromPurchases = this.purchases
+      .map((p: any) => (p?.supplier || '').toString().trim())
+      .filter((name: string) => !!name);
+    
+    // Get suppliers from localStorage (added via suppliers page)
+    let fromLocalStorage: string[] = [];
+    try {
+      const profiles = JSON.parse(localStorage.getItem('suppliers_profiles') || '{}');
+      fromLocalStorage = Object.keys(profiles);
+    } catch {
+      fromLocalStorage = [];
+    }
+    
+    // Merge and deduplicate
+    const suppliers = Array.from(
+      new Set([...fromPurchases, ...fromLocalStorage])
+    ).sort((a, b) => a.localeCompare(b));
+
+    const supplierField = this.formFields.find((f) => f.name === 'supplier');
+    if (supplierField) supplierField.suggestions = suppliers;
   }
 
   loadCharts() {

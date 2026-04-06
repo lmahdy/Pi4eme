@@ -23,7 +23,7 @@ from sklearn.linear_model import LinearRegression
 
 # ── Tesseract path configuration (Windows) ────────────────────────────
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"D:\Programes\Houni\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"D:\imagepiworker\tesseract.exe"
 
 app = Flask(__name__)
 CORS(app)

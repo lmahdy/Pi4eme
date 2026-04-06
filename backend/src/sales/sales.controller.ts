@@ -94,4 +94,10 @@ export class SalesController {
     async remove(@Param('id') id: string, @Req() req: any) {
         return this.svc.delete(req.user.companyId, id);
     }
+
+    // DELETE /sales/by-customer/:customer
+    @Delete('by-customer/:customer')
+    async removeByCustomer(@Param('customer') customer: string, @Req() req: any) {
+        return this.svc.deleteByCustomer(req.user.companyId, customer);
+    }
 }

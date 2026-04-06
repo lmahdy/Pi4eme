@@ -11,22 +11,22 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [CommonModule, NgChartsModule, TranslateModule],
   template: `
     <div class="page-header">
-      <h1>📊 Financial Report</h1>
-      <p class="page-subtitle">Company financial overview, AI health assessment & revenue forecast</p>
+      <h1>{{ 'REPORT_PAGE.TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'REPORT_PAGE.SUBTITLE' | translate }}</p>
     </div>
 
     <!-- Financial KPI Cards -->
     <div class="grid grid-3" *ngIf="health">
       <div class="card kpi-card">
-        <div class="kpi-label">Revenue</div>
+        <div class="kpi-label">{{ 'REPORT.REVENUE' | translate }}</div>
         <div class="kpi-value positive">{{ health.revenue | number:'1.2-2' }}</div>
       </div>
       <div class="card kpi-card">
-        <div class="kpi-label">Costs</div>
+        <div class="kpi-label">{{ 'REPORT.COSTS' | translate }}</div>
         <div class="kpi-value negative">{{ health.costs | number:'1.2-2' }}</div>
       </div>
       <div class="card kpi-card">
-        <div class="kpi-label">Profit</div>
+        <div class="kpi-label">{{ 'REPORT.PROFIT' | translate }}</div>
         <div class="kpi-value" [class.positive]="health.profit >= 0" [class.negative]="health.profit < 0">
           {{ health.profit | number:'1.2-2' }}
         </div>
@@ -125,8 +125,8 @@ import { TranslateModule } from '@ngx-translate/core';
     <!-- Empty state -->
     <div class="card empty-state" *ngIf="!healthLoading && !forecastLoading && !health">
       <div class="empty-icon">📊</div>
-      <h3>No data available</h3>
-      <p>Upload sales and purchase data to generate your financial report and AI insights.</p>
+      <h3>{{ 'REPORT_PAGE.EMPTY_TITLE' | translate }}</h3>
+      <p>{{ 'REPORT_PAGE.EMPTY_DESC' | translate }}</p>
     </div>
   `,
   styles: [`

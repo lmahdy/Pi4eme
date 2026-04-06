@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface FormFieldDef {
   name: string;
@@ -9,13 +10,14 @@ export interface FormFieldDef {
   required: boolean;
   placeholder?: string;
   default?: any;
+  suggestions?: string[];
   custom?: boolean; // user-added field
 }
 
 @Component({
   selector: 'app-dynamic-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <form (ngSubmit)="submit()" class="dynamic-form">
       <div class="form-fields">
@@ -23,16 +25,20 @@ export interface FormFieldDef {
           <div class="form-group" [class.full-width]="i === fields.length - 1 && fields.length % 2 !== 0">
             <div class="label-row">
               <label>{{ field.label }} {{ field.required ? '*' : '' }}</label>
-              <button type="button" class="btn-remove-field" *ngIf="field.custom" (click)="removeField(i)" title="Remove field">&times;</button>
+              <button type="button" class="btn-remove-field" *ngIf="field.custom" (click)="removeField(i)" [title]="'DYNAMIC_FORM.REMOVE_FIELD' | translate">&times;</button>
             </div>
             <input
               *ngIf="field.type === 'text'"
               type="text"
               [(ngModel)]="formData[field.name]"
               [name]="field.name"
+              [attr.list]="field.suggestions?.length ? field.name + '-suggestions' : null"
               [placeholder]="field.placeholder || ''"
               [required]="field.required"
             />
+            <datalist *ngIf="field.type === 'text' && field.suggestions?.length" [id]="field.name + '-suggestions'">
+              <option *ngFor="let option of field.suggestions" [value]="option"></option>
+            </datalist>
             <input
               *ngIf="field.type === 'number'"
               type="number"
@@ -55,17 +61,17 @@ export interface FormFieldDef {
 
       <!-- Add Custom Field -->
       <div class="add-field-row">
-        <input type="text" [(ngModel)]="newFieldName" name="newFieldName" placeholder="New field name..." class="add-field-input" />
+        <input type="text" [(ngModel)]="newFieldName" name="newFieldName" [placeholder]="'DYNAMIC_FORM.NEW_FIELD_NAME' | translate" class="add-field-input" />
         <select [(ngModel)]="newFieldType" name="newFieldType" class="add-field-select">
-          <option value="text">Text</option>
-          <option value="number">Number</option>
-          <option value="date">Date</option>
+          <option value="text">{{ 'DYNAMIC_FORM.TEXT' | translate }}</option>
+          <option value="number">{{ 'DYNAMIC_FORM.NUMBER' | translate }}</option>
+          <option value="date">{{ 'DYNAMIC_FORM.DATE' | translate }}</option>
         </select>
-        <button type="button" class="btn-add-field" (click)="addField()" [disabled]="!newFieldName.trim()">+ Add Field</button>
+        <button type="button" class="btn-add-field" (click)="addField()" [disabled]="!newFieldName.trim()">{{ 'DYNAMIC_FORM.ADD_FIELD' | translate }}</button>
       </div>
 
       <button class="btn-submit" type="submit" [disabled]="loading">
-        {{ loading ? 'Saving...' : submitLabel }}
+        {{ loading ? ('DYNAMIC_FORM.SAVING' | translate) : submitLabel }}
       </button>
     </form>
   `,

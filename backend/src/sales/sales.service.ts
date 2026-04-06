@@ -154,6 +154,14 @@ export class SalesService {
         await this.saleModel.deleteOne({ _id: id, companyId: new Types.ObjectId(companyId) }).exec();
     }
 
+    async deleteByCustomer(companyId: string, customer: string): Promise<{ deleted: number }> {
+        const result = await this.saleModel.deleteMany({ 
+            companyId: new Types.ObjectId(companyId), 
+            customer: { $regex: new RegExp('^' + customer + '$', 'i') } 
+        }).exec();
+        return { deleted: result.deletedCount };
+    }
+
     // ── KPIs ─────────────────────────────────────────────────────
     async getKpis(companyId: string) {
         const cid = new Types.ObjectId(companyId);
