@@ -5,12 +5,14 @@ import { Purchase, PurchaseSchema } from './schemas/purchase.schema';
 import { PurchasesService } from './purchases.service';
 import { PurchasesController } from './purchases.controller';
 import { EtlModule } from '../etl/etl.module';
+import { OcrModule } from '../ocr/ocr.module';
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Purchase.name, schema: PurchaseSchema }]),
         MulterModule.register({ storage: undefined }),
         EtlModule,
+        OcrModule,
     ],
     controllers: [PurchasesController],
     providers: [PurchasesService],

@@ -31,6 +31,10 @@ export class ApiService {
     return this.http.post<any>(`${this.apiBase}/purchases`, data);
   }
 
+  bulkCreatePurchases(data: any[]) {
+    return this.http.post<any>(`${this.apiBase}/purchases/bulk`, { purchases: data });
+  }
+
   getPurchases() {
     return this.http.get<any[]>(`${this.apiBase}/purchases/list`);
   }
@@ -77,6 +81,30 @@ export class ApiService {
 
   createSale(data: any) {
     return this.http.post<any>(`${this.apiBase}/sales`, data);
+  }
+
+  bulkCreateSales(data: any[]) {
+    return this.http.post<any>(`${this.apiBase}/sales/bulk`, { sales: data });
+  }
+
+  uploadSaleImage(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/sales/upload-image`, fd);
+  }
+
+  confirmSalesOcr(rows: any[]) {
+    return this.http.post<any>(`${this.apiBase}/sales/ocr/confirm`, { rows });
+  }
+
+  uploadPurchaseImage(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/purchases/upload-image`, fd);
+  }
+
+  confirmPurchasesOcr(rows: any[]) {
+    return this.http.post<any>(`${this.apiBase}/purchases/ocr/confirm`, { rows });
   }
 
   getSales() {

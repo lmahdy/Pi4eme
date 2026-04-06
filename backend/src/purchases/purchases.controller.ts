@@ -76,9 +76,22 @@ export class PurchasesController {
         return this.svc.byCategory(req.user.companyId);
     }
 
+    // POST /purchases/upload-image — Upload invoice image, extract via OCR, return preview
+    @Post('upload-image')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+        return this.svc.uploadInvoiceImage(file.buffer, file.originalname);
+    }
+
+    // POST /purchases/ocr/confirm — Save user-reviewed OCR rows through ETL pipeline
+    @Post('ocr/confirm')
+    async confirmOcr(@Body() body: { rows: any[] }, @Req() req: any) {
+        return this.svc.confirmOcrRows(req.user.companyId, body.rows);
+    }
+
     // DELETE /purchases/:id
     @Delete(':id')
-    remove(@Param('id') id: string, @Req() req: any) {
+    async remove(@Param('id') id: string, @Req() req: any) {
         return this.svc.delete(req.user.companyId, id);
     }
 }
