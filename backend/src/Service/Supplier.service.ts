@@ -54,6 +54,6 @@ export class SupplierService {
     if (!supplier) {
       throw new NotFoundException(`Supplier with name "${name}" not found`);
     }
-    await this.supplierModel.findByIdAndDelete(supplier._id).exec();
+    await this.supplierModel.findByIdAndDelete(supplier.name).exec();
   }
 }
