@@ -1,47 +1,127 @@
-<div class="app-shell">
-  <header class="app-header">
-    <div class="brand">
-      <img class="brand-logo" src="assets/tenexa-logo.png" alt="Tenexa Logo" />
-      <div class="brand-text">
-        <span class="brand-title">Tenexa</span>
-        <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
+<div class="app-shell" [class.sidebar-layout]="showNavigation">
+  <!-- Logged-in: responsive sidebar -->
+  <ng-container *ngIf="showNavigation">
+    <div
+      class="sidebar-backdrop"
+      [class.is-visible]="sidebarOpen"
+      (click)="closeSidebar()"
+      aria-hidden="true"
+    ></div>
+    <aside id="app-sidebar" class="sidebar" [class.is-open]="sidebarOpen">
+      <div class="sidebar-inner">
+        <div class="sidebar-brand">
+          <img class="brand-logo" src="assets/tenexa-logo.png" alt="" />
+          <div class="brand-text">
+            <span class="brand-title">Tenexa</span>
+            <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <ng-container *ngIf="!(isAdmin$ | async)">
+            <a routerLink="/sales" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.SALES" | translate
+            }}</a>
+            <a routerLink="/purchases" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.PURCHASES" | translate
+            }}</a>
+            <a routerLink="/customers" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.CUSTOMERS" | translate
+            }}</a>
+            <a routerLink="/suppliers" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.SUPPLIERS" | translate
+            }}</a>
+            <a routerLink="/report" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.REPORT" | translate
+            }}</a>
+            <a routerLink="/assistant" routerLinkActive="active-link" (click)="closeSidebar()">{{
+              "NAV.ASSISTANT" | translate
+            }}</a>
+          </ng-container>
+          <a
+            *ngIf="isAdmin$ | async"
+            routerLink="/admin"
+            routerLinkActive="active-link"
+            (click)="closeSidebar()"
+            >{{ "NAV.ADMIN" | translate }}</a
+          >
+          <a routerLink="/settings" routerLinkActive="active-link" (click)="closeSidebar()">{{
+            "NAV.SETTINGS" | translate
+          }}</a>
+          <a routerLink="/login" class="nav-logout" (click)="logout(); closeSidebar()">{{
+            "NAV.LOGOUT" | translate
+          }}</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="theme-selector">
+            <button
+              class="theme-btn"
+              type="button"
+              (click)="toggleTheme()"
+              [title]="isDarkMode ? 'Light Mode' : 'Dark Mode'"
+            >
+              <span *ngIf="isDarkMode$ | async" class="theme-icon">☀️</span>
+              <span *ngIf="!(isDarkMode$ | async)" class="theme-icon">🌙</span>
+            </button>
+          </div>
+          <div class="lang-selector">
+            <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
+              <option value="en">EN</option>
+              <option value="fr">FR</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+        </div>
       </div>
-    </div>
-    <nav class="nav" *ngIf="showNavigation">
-      <div class="nav-center">
-        <ng-container *ngIf="!(isAdmin$ | async)">
-          <a routerLink="/sales" routerLinkActive="active-link">{{ "NAV.SALES" | translate }}</a>
-          <a routerLink="/purchases" routerLinkActive="active-link">{{ "NAV.PURCHASES" | translate }}</a>
-          <a routerLink="/customers" routerLinkActive="active-link">{{ "NAV.CUSTOMERS" | translate }}</a>
-          <a routerLink="/suppliers" routerLinkActive="active-link">{{ "NAV.SUPPLIERS" | translate }}</a>
-          <a routerLink="/report" routerLinkActive="active-link">{{ "NAV.REPORT" | translate }}</a>
-          <a routerLink="/assistant" routerLinkActive="active-link">{{ "NAV.ASSISTANT" | translate }}</a>
-        </ng-container>
-        <a routerLink="/admin" routerLinkActive="active-link" *ngIf="isAdmin$ | async">{{ "NAV.ADMIN" | translate }}</a>
-        <a routerLink="/settings" routerLinkActive="active-link">{{ "NAV.SETTINGS" | translate }}</a>
-        <a routerLink="/login" (click)="logout()">{{ "NAV.LOGOUT" | translate }}</a>
+    </aside>
+  </ng-container>
+
+  <div class="app-column">
+    <header class="app-topbar">
+      <button
+        *ngIf="showNavigation"
+        type="button"
+        class="sidebar-toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-expanded]="sidebarOpen"
+        aria-controls="app-sidebar"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <div class="topbar-brand" *ngIf="!showNavigation">
+        <img class="brand-logo" src="assets/tenexa-logo.png" alt="Tenexa Logo" />
+        <div class="brand-text">
+          <span class="brand-title">Tenexa</span>
+          <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
+        </div>
       </div>
-    </nav>
-    <div class="header-controls">
-      <div class="theme-selector">
-        <button class="theme-btn" (click)="toggleTheme()" [title]="isDarkMode ? 'Light Mode' : 'Dark Mode'">
-          <span *ngIf="isDarkMode$ | async" class="theme-icon">☀️</span>
-          <span *ngIf="!(isDarkMode$ | async)" class="theme-icon">🌙</span>
-        </button>
+      <div class="topbar-fill" *ngIf="showNavigation"></div>
+      <div class="header-controls" *ngIf="!showNavigation">
+        <div class="theme-selector">
+          <button
+            class="theme-btn"
+            type="button"
+            (click)="toggleTheme()"
+            [title]="isDarkMode ? 'Light Mode' : 'Dark Mode'"
+          >
+            <span *ngIf="isDarkMode$ | async" class="theme-icon">☀️</span>
+            <span *ngIf="!(isDarkMode$ | async)" class="theme-icon">🌙</span>
+          </button>
+        </div>
+        <div class="lang-selector">
+          <select #langSelectGuest (change)="changeLang(langSelectGuest.value)" [value]="currentLang">
+            <option value="en">EN</option>
+            <option value="fr">FR</option>
+            <option value="ar">AR</option>
+          </select>
+        </div>
       </div>
-      <div class="lang-selector">
-        <select #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang">
-          <option value="en">EN</option>
-          <option value="fr">FR</option>
-          <option value="ar">AR</option>
-        </select>
-      </div>
-    </div>
-  </header>
-  <main class="app-main">
-    <router-outlet></router-outlet>
-  </main>
-  
-  <!-- Floating Chatbot with FAB Icon (for authenticated users only) -->
+    </header>
+
+    <main class="app-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
   <app-chatbot *ngIf="showNavigation"></app-chatbot>
 </div>

@@ -50,10 +50,11 @@ export class SupplierService {
   }
 
   async deleteByName(name: string): Promise<void> {
-    const supplier = await this.findByName(name);
-    if (!supplier) {
+    const result = await this.supplierModel
+      .findOneAndDelete({ name: { $regex: new RegExp(name, 'i') } })
+      .exec();
+    if (!result) {
       throw new NotFoundException(`Supplier with name "${name}" not found`);
     }
-    await this.supplierModel.findByIdAndDelete(supplier._id).exec();
   }
 }

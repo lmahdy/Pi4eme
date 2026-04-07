@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from './services/language.service';
 import { ThemeService } from './services/theme.service';
 import { ChatbotComponent } from './components/chatbot.component';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +15,13 @@ import { Observable } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   showNavigation = false;
+  /** Mobile / tablet drawer; ignored on large screens via CSS */
+  sidebarOpen = false;
   isAdmin$ = this.authService.isAdmin$;
   isDarkMode$: Observable<boolean>;
+  private navSub?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -41,10 +44,38 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authService.isLoggedIn$.subscribe((loggedIn) => {
       this.showNavigation = loggedIn;
+      if (!loggedIn) {
+        this.sidebarOpen = false;
+      }
     });
+
+    this.navSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => {
+        this.sidebarOpen = false;
+      });
 
     // Initialize theme and language
     this.initializeApp();
+  }
+
+  ngOnDestroy(): void {
+    this.navSub?.unsubscribe();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.sidebarOpen) {
+      this.closeSidebar();
+    }
   }
 
   private initializeApp(): void {
