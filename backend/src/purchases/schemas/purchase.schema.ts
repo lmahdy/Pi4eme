@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 export type PurchaseStatus = 'pending' | 'received' | 'cancelled';
+export type ValidationStatus = 'pending' | 'approved' | 'rejected';
 
 @Schema({ collection: 'purchases_flat', timestamps: true })
 export class Purchase {
@@ -38,6 +39,18 @@ export class Purchase {
 
   @Prop({ default: '' })
   notes: string;
+
+  @Prop({
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  })
+  validationStatus: ValidationStatus;
+
+  @Prop({ default: '' })
+  rejectionNote: string;
+
+  @Prop({ default: '' })
+  invoiceRef: string;
 }
 
 export type PurchaseDocument = Purchase & Document;

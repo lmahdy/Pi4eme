@@ -25,8 +25,8 @@ export class AnalyticsService {
         const cid = new Types.ObjectId(companyId);
 
         const [rawPurchases, rawSales] = await Promise.all([
-            this.purchaseModel.find({ companyId: cid }).lean().exec(),
-            this.saleModel.find({ companyId: cid }).lean().exec(),
+            this.purchaseModel.find({ companyId: cid, validationStatus: 'approved' }).lean().exec(),
+            this.saleModel.find({ companyId: cid, validationStatus: 'approved' }).lean().exec(),
         ]);
 
         // ── ML Protection: filter out rows that would break ML ──

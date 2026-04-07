@@ -147,7 +147,10 @@ export class SalesService {
 
     // ── Read ─────────────────────────────────────────────────────
     async findAll(companyId: string): Promise<Sale[]> {
-        return this.saleModel.find({ companyId: new Types.ObjectId(companyId) }).sort({ date: -1 }).exec();
+        return this.saleModel.find({
+            companyId: new Types.ObjectId(companyId),
+            validationStatus: 'approved',
+        }).sort({ date: -1 }).exec();
     }
 
     async delete(companyId: string, id: string): Promise<void> {
@@ -162,11 +165,52 @@ export class SalesService {
         return { deleted: result.deletedCount };
     }
 
+    // ── Invoice Validation Methods ────────────────────────────────
+    async getForValidation(companyId: string) {
+        return this.saleModel
+            .find({ companyId: new Types.ObjectId(companyId) })
+            .sort({ createdAt: -1 })
+            .exec();
+    }
+
+    async approveInvoice(companyId: string, id: string): Promise<any> {
+        return this.saleModel.findOneAndUpdate(
+            { _id: id, companyId: new Types.ObjectId(companyId) },
+            { validationStatus: 'approved', rejectionNote: '' },
+            { new: true },
+        ).exec();
+    }
+
+    async rejectInvoice(companyId: string, id: string, note: string): Promise<any> {
+        return this.saleModel.findOneAndUpdate(
+            { _id: id, companyId: new Types.ObjectId(companyId) },
+            { validationStatus: 'rejected', rejectionNote: note || '' },
+            { new: true },
+        ).exec();
+    }
+
+    async getValidationStats(companyId: string) {
+        const cid = new Types.ObjectId(companyId);
+        const [stats] = await this.saleModel.aggregate([
+            { $match: { companyId: cid } },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: 1 },
+                    pending: { $sum: { $cond: [{ $eq: ['$validationStatus', 'pending'] }, 1, 0] } },
+                    approved: { $sum: { $cond: [{ $eq: ['$validationStatus', 'approved'] }, 1, 0] } },
+                    rejected: { $sum: { $cond: [{ $eq: ['$validationStatus', 'rejected'] }, 1, 0] } },
+                },
+            },
+        ]);
+        return stats || { total: 0, pending: 0, approved: 0, rejected: 0 };
+    }
+
     // ── KPIs ─────────────────────────────────────────────────────
     async getKpis(companyId: string) {
         const cid = new Types.ObjectId(companyId);
         const [result] = await this.saleModel.aggregate([
-            { $match: { companyId: cid } },
+            { $match: { companyId: cid, validationStatus: 'approved' } },
             {
                 $group: {
                     _id: null,
@@ -180,7 +224,7 @@ export class SalesService {
         ]);
 
         const [topProduct] = await this.saleModel.aggregate([
-            { $match: { companyId: cid } },
+            { $match: { companyId: cid, validationStatus: 'approved' } },
             { $group: { _id: '$product', total: { $sum: '$totalAmount' } } },
             { $sort: { total: -1 } },
             { $limit: 1 },
@@ -201,7 +245,7 @@ export class SalesService {
         const cid = new Types.ObjectId(companyId);
         const dateFormat = interval === 'month' ? '%Y-%m' : '%Y-%m-%d';
         return this.saleModel.aggregate([
-            { $match: { companyId: cid } },
+            { $match: { companyId: cid, validationStatus: 'approved' } },
             {
                 $group: {
                     _id: { $dateToString: { format: dateFormat, date: '$date' } },
@@ -216,7 +260,7 @@ export class SalesService {
     async revenueByProduct(companyId: string) {
         const cid = new Types.ObjectId(companyId);
         return this.saleModel.aggregate([
-            { $match: { companyId: cid } },
+            { $match: { companyId: cid, validationStatus: 'approved' } },
             { $group: { _id: '$product', revenue: { $sum: '$totalAmount' }, count: { $sum: 1 } } },
             { $sort: { revenue: -1 } },
         ]);
@@ -225,7 +269,7 @@ export class SalesService {
     async revenueByCustomer(companyId: string) {
         const cid = new Types.ObjectId(companyId);
         return this.saleModel.aggregate([
-            { $match: { companyId: cid } },
+            { $match: { companyId: cid, validationStatus: 'approved' } },
             { $group: { _id: '$customer', revenue: { $sum: '$totalAmount' }, count: { $sum: 1 } } },
             { $sort: { revenue: -1 } },
         ]);

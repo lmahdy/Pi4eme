@@ -11,11 +11,15 @@ export class AuthService {
   private currentUserRole = new BehaviorSubject<string | null>(
     this.getRoleFromToken(),
   );
+  private currentUserEmail = new BehaviorSubject<string | null>(
+    this.getEmailFromToken(),
+  );
 
   constructor(private http: HttpClient) {}
 
   isLoggedIn$ = this.loggedIn.asObservable();
   currentUserRole$ = this.currentUserRole.asObservable();
+  currentUserEmail$ = this.currentUserEmail.asObservable();
   isAdmin$ = this.currentUserRole.pipe(map((role) => role === 'Admin'));
 
   private hasToken(): boolean {
@@ -28,6 +32,17 @@ export class AuthService {
     try {
       const decoded: any = jwtDecode(token);
       return decoded.role;
+    } catch {
+      return null;
+    }
+  }
+
+  private getEmailFromToken(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.email || decoded.sub || null;
     } catch {
       return null;
     }
@@ -68,6 +83,7 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, token);
     this.loggedIn.next(true);
     this.currentUserRole.next(this.getRoleFromToken());
+    this.currentUserEmail.next(this.getEmailFromToken());
   }
 
   getToken() {
@@ -78,6 +94,7 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     this.loggedIn.next(false);
     this.currentUserRole.next(null);
+    this.currentUserEmail.next(null);
   }
 
   signup(payload: any) {

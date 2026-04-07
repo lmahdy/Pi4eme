@@ -1,5 +1,5 @@
 import {
-    Controller, Get, Post, Delete, Body, Param, Query,
+    Controller, Get, Post, Patch, Delete, Body, Param, Query,
     UseGuards, UseInterceptors, UploadedFile, Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -87,6 +87,30 @@ export class PurchasesController {
     @Post('ocr/confirm')
     async confirmOcr(@Body() body: { rows: any[] }, @Req() req: any) {
         return this.svc.confirmOcrRows(req.user.companyId, body.rows);
+    }
+
+    // GET /purchases/validate/list
+    @Get('validate/list')
+    getForValidation(@Req() req: any) {
+        return this.svc.getForValidation(req.user.companyId);
+    }
+
+    // GET /purchases/validate/stats
+    @Get('validate/stats')
+    getValidationStats(@Req() req: any) {
+        return this.svc.getValidationStats(req.user.companyId);
+    }
+
+    // PATCH /purchases/:id/approve
+    @Patch(':id/approve')
+    approve(@Param('id') id: string, @Req() req: any) {
+        return this.svc.approveInvoice(req.user.companyId, id);
+    }
+
+    // PATCH /purchases/:id/reject
+    @Patch(':id/reject')
+    reject(@Param('id') id: string, @Body('note') note: string, @Req() req: any) {
+        return this.svc.rejectInvoice(req.user.companyId, id, note || '');
     }
 
     // DELETE /purchases/:id

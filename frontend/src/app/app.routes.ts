@@ -17,6 +17,8 @@ import { guestGuard } from './guards/guest.guard';
 import { adminGuard } from './guards/admin.guard';
 import { rolesGuard } from './guards/roles.guard';
 import { AuthCallbackComponent } from './pages/auth-callback.component';
+import { InvoiceValidationComponent } from './pages/invoice-validation.component';
+import { accountantDemoGuard } from './guards/accountant-demo.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -30,6 +32,7 @@ export const routes: Routes = [
   { path: 'assistant', component: AssistantComponent, canActivate: [authGuard] },
   { path: 'customers', component: CustomersComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },
   { path: 'suppliers', component: SuppliersComponent, canActivate: [authGuard, rolesGuard(['CompanyOwner', 'Accountant'], '/admin')] },
+  { path: 'invoice-validation', component: InvoiceValidationComponent, canActivate: [authGuard, accountantDemoGuard] },
   { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard, rolesGuard(['Admin'], '/sales')] },
   { path: 'face-verify', component: FaceVerifyComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },

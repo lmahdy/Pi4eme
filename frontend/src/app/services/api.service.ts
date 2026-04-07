@@ -135,6 +135,39 @@ export class ApiService {
     return this.http.delete(`${this.apiBase}/sales/by-customer/${customer}`);
   }
 
+  // ── Invoice Validation ────────────────────────────────────────
+  getPurchasesForValidation() {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/validate/list`);
+  }
+
+  getPurchasesValidationStats() {
+    return this.http.get<any>(`${this.apiBase}/purchases/validate/stats`);
+  }
+
+  approvePurchaseInvoice(id: string) {
+    return this.http.patch<any>(`${this.apiBase}/purchases/${id}/approve`, {});
+  }
+
+  rejectPurchaseInvoice(id: string, note: string) {
+    return this.http.patch<any>(`${this.apiBase}/purchases/${id}/reject`, { note });
+  }
+
+  getSalesForValidation() {
+    return this.http.get<any[]>(`${this.apiBase}/sales/validate/list`);
+  }
+
+  getSalesValidationStats() {
+    return this.http.get<any>(`${this.apiBase}/sales/validate/stats`);
+  }
+
+  approveSaleInvoice(id: string) {
+    return this.http.patch<any>(`${this.apiBase}/sales/${id}/approve`, {});
+  }
+
+  rejectSaleInvoice(id: string, note: string) {
+    return this.http.patch<any>(`${this.apiBase}/sales/${id}/reject`, { note });
+  }
+
   // ── OCR ──────────────────────────────────────────────────────
   ocrInvoice(file: File) {
     const fd = new FormData();

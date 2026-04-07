@@ -12,18 +12,18 @@ export class SupplierService {
     private readonly supplierModel: Model<SupplierDocument>,
   ) {}
 
-  async create(dto: CreateSupplierDto): Promise<Supplier> {
+  async create(dto: CreateSupplierDto): Promise<SupplierDocument> {
     return this.supplierModel.create(dto);
   }
 
-  async findAll(companyId: string): Promise<Supplier[]> {
+  async findAll(companyId: string): Promise<SupplierDocument[]> {
     return this.supplierModel
       .find({ companyId })
       .populate('companyId')
       .exec();
   }
 
-  async findOne(id: string): Promise<Supplier> {
+  async findOne(id: string): Promise<SupplierDocument> {
     const supplier = await this.supplierModel
       .findById(id)
       .populate('companyId')
@@ -32,7 +32,7 @@ export class SupplierService {
     return supplier;
   }
 
-  async update(id: string, dto: UpdateSupplierDto): Promise<Supplier> {
+  async update(id: string, dto: UpdateSupplierDto): Promise<SupplierDocument> {
     const updated = await this.supplierModel
       .findByIdAndUpdate(id, dto, { new: true })
       .exec();
@@ -45,15 +45,18 @@ export class SupplierService {
     if (!result) throw new NotFoundException(`Supplier #${id} not found`);
   }
 
-  async findByName(name: string): Promise<Supplier | null> {
-    return this.supplierModel.findOne({ name: { $regex: new RegExp(name, 'i') } }).exec();
+  async findByName(name: string): Promise<SupplierDocument | null> {
+    return this.supplierModel
+      .findOne({ name: { $regex: new RegExp(name, 'i') } })
+      .exec();
   }
 
   async deleteByName(name: string): Promise<void> {
-    const supplier = await this.findByName(name);
-    if (!supplier) {
+    const result = await this.supplierModel
+      .findOneAndDelete({ name: { $regex: new RegExp(name, 'i') } })
+      .exec();
+    if (!result) {
       throw new NotFoundException(`Supplier with name "${name}" not found`);
     }
-    await this.supplierModel.findByIdAndDelete(supplier._id).exec();
   }
 }

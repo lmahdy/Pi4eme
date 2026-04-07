@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LanguageService } from './services/language.service';
 import { ThemeService } from './services/theme.service';
 import { ChatbotComponent } from './components/chatbot.component';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +18,9 @@ import { Observable } from 'rxjs';
 export class AppComponent implements OnInit {
   showNavigation = false;
   isAdmin$ = this.authService.isAdmin$;
+  isAccountantDemo$ = this.authService.currentUserEmail$.pipe(
+    map(email => email === 'accountant@demo.com')
+  );
   isDarkMode$: Observable<boolean>;
 
   constructor(
