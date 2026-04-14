@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { CdkDragDrop, CdkDragEnter, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-customers-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DragDropModule],
   template: `
     <div class="page-header">
       <div class="page-header-row">
@@ -20,50 +21,89 @@ import { ApiService } from '../services/api.service';
       </div>
     </div>
 
-    <!-- Search -->
     <div class="search-bar">
       <span class="search-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       </span>
       <input type="text" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search customers..." class="search-input" />
     </div>
 
-    <!-- Customer Cards -->
-    <div class="partner-grid" *ngIf="filteredCustomers.length > 0">
-      <div class="partner-card" *ngFor="let c of filteredCustomers">
-        <div class="partner-card-top">
-          <div class="partner-avatar">{{ getInitials(c.name) }}</div>
-          <div class="partner-info">
-            <span class="partner-name">{{ c.name }}</span>
-            <span class="partner-meta" *ngIf="c.email">{{ c.email }}</span>
-            <span class="partner-meta" *ngIf="c.phone">{{ c.phone }}</span>
+    <div class="partner-grid" *ngIf="filteredCustomers.length > 0" cdkDropListGroup>
+      <div
+        class="partner-card-shell"
+        *ngFor="let c of filteredCustomers; trackBy: trackByCustomerId"
+        cdkDropList
+        [id]="getCustomerDropListId(c)"
+        [cdkDropListData]="c"
+        [cdkDropListConnectedTo]="customerDropListIds"
+        [cdkDropListSortingDisabled]="true"
+        (cdkDropListEntered)="onCustomerEntered($event, c)"
+        (cdkDropListDropped)="onCustomerDropped($event)"
+      >
+        <div
+          class="partner-card"
+          cdkDrag
+          [cdkDragData]="c"
+          (cdkDragStarted)="onCustomerDragStarted(c)"
+          (cdkDragEnded)="onCustomerDragEnded()"
+        >
+          <div class="partner-card-top">
+            <div class="partner-avatar">{{ getInitials(c.name) }}</div>
+            <div class="partner-info">
+              <span class="partner-name">{{ c.name }}</span>
+              <span class="partner-meta" *ngIf="c.email">{{ c.email }}</span>
+              <span class="partner-meta" *ngIf="c.phone">{{ c.phone }}</span>
+            </div>
+            <button
+              class="btn-drag-handle"
+              type="button"
+              cdkDragHandle
+              aria-label="Reorder customer"
+              title="Drag to reorder"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="8" cy="6" r="1.6" />
+                <circle cx="16" cy="6" r="1.6" />
+                <circle cx="8" cy="12" r="1.6" />
+                <circle cx="16" cy="12" r="1.6" />
+                <circle cx="8" cy="18" r="1.6" />
+                <circle cx="16" cy="18" r="1.6" />
+              </svg>
+            </button>
           </div>
+          <div class="partner-card-actions">
+            <button class="btn-action edit" (click)="editCustomer(c)" title="Edit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+            <button class="btn-action delete" (click)="deleteCustomer(c._id)" title="Delete">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </button>
+          </div>
+          <div class="partner-date">Added {{ c.createdAt | date:'mediumDate' }}</div>
         </div>
-        <div class="partner-card-actions">
-          <button class="btn-action edit" (click)="editCustomer(c)" title="Edit">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="btn-action delete" (click)="deleteCustomer(c._id)" title="Delete">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        </div>
-        <div class="partner-date">Added {{ c.createdAt | date:'mediumDate' }}</div>
       </div>
     </div>
 
     <div class="empty-state card" *ngIf="!loading && filteredCustomers.length === 0">
-      <div class="empty-icon">👥</div>
+      <div class="empty-icon">&#128101;</div>
       <h3>No customers yet</h3>
       <p>Add your first customer to get started.</p>
     </div>
 
     <div class="card loading-state" *ngIf="loading">
-      <div class="spinner"></div><p>Loading customers...</p>
+      <div class="spinner"></div>
+      <p>Loading customers...</p>
     </div>
 
-    <!-- Modal -->
     <div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
@@ -84,7 +124,7 @@ import { ApiService } from '../services/api.service';
             <input type="text" [(ngModel)]="form.phone" name="phone" placeholder="+1 234 567 890 (optional)" />
           </div>
           <div *ngIf="formMsg" class="status-msg" [class.error]="formError">{{ formMsg }}</div>
-          <button type="submit" class="btn-submit" [disabled]="!form.name?.trim() || saving">
+          <button type="submit" class="btn-submit" [disabled]="!form.name.trim() || saving">
             {{ saving ? 'Saving...' : (editingCustomer ? 'Update' : 'Create') }}
           </button>
         </form>
@@ -127,13 +167,34 @@ import { ApiService } from '../services/api.service';
       display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px; margin-bottom: 20px;
     }
+    .partner-card-shell { display: block; }
     .partner-card {
-      background: white; border-radius: 14px; padding: 18px;
+      background: white; border-radius: 14px; padding: 18px; height: 100%;
       border: 1px solid rgba(84,131,179,0.1);
       box-shadow: 0 2px 10px rgba(2,16,36,0.06);
-      transition: all 0.2s ease; position: relative;
+      transition: transform 220ms cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative; box-sizing: border-box;
     }
-    .partner-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,16,36,0.1); }
+    .partner-card:hover:not(.cdk-drag-placeholder):not(.cdk-drag-dragging) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2,16,36,0.1);
+    }
+    .partner-card.cdk-drag-preview {
+      box-shadow: 0 18px 40px rgba(2,16,36,0.18);
+      border-color: rgba(84,131,179,0.35);
+      transform: rotate(1.5deg);
+    }
+    .partner-card.cdk-drag-placeholder {
+      opacity: 1;
+      border: 1.5px dashed rgba(84,131,179,0.35);
+      background: linear-gradient(135deg, rgba(240,246,255,0.96) 0%, rgba(255,255,255,0.96) 100%);
+      box-shadow: none;
+    }
+    .partner-card.cdk-drag-placeholder * { opacity: 0; }
+    .partner-card.cdk-drag-animating { transition: transform 220ms cubic-bezier(0.2, 0, 0, 1); }
+    .partner-card-shell.cdk-drop-list-receiving .partner-card:not(.cdk-drag-placeholder) {
+      border-color: rgba(84,131,179,0.24);
+    }
 
     .partner-card-top { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
     .partner-avatar {
@@ -142,9 +203,19 @@ import { ApiService } from '../services/api.service';
       color: white; display: flex; align-items: center; justify-content: center;
       font-size: 15px; font-weight: 700; flex-shrink: 0;
     }
-    .partner-info { display: flex; flex-direction: column; min-width: 0; }
+    .partner-info { display: flex; flex: 1; flex-direction: column; min-width: 0; }
     .partner-name { font-weight: 700; font-size: 15px; color: #021024; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .partner-meta { font-size: 12px; color: #7DA0CA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .btn-drag-handle {
+      width: 34px; height: 34px; border-radius: 10px; border: none;
+      background: rgba(84,131,179,0.08); color: #5483B3;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: grab; flex-shrink: 0; transition: all 0.2s ease;
+    }
+    .btn-drag-handle:hover { background: rgba(84,131,179,0.16); color: #052659; }
+    .btn-drag-handle:active { cursor: grabbing; }
+    .btn-drag-handle:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(84,131,179,0.18); }
 
     .partner-card-actions { display: flex; gap: 6px; margin-bottom: 8px; }
     .btn-action {
@@ -167,7 +238,6 @@ import { ApiService } from '../services/api.service';
     .spinner { width: 36px; height: 36px; margin: 0 auto 12px; border: 3px solid #C1E8FF; border-top: 3px solid #052659; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Modal */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.45);
       display: flex; align-items: center; justify-content: center;
@@ -203,6 +273,8 @@ import { ApiService } from '../services/api.service';
   `],
 })
 export class CustomersDashboardComponent implements OnInit {
+  private readonly orderStorageKey = 'tenexa.customers.order';
+
   customers: any[] = [];
   filteredCustomers: any[] = [];
   searchQuery = '';
@@ -212,17 +284,31 @@ export class CustomersDashboardComponent implements OnInit {
   saving = false;
   formMsg = '';
   formError = false;
+  draggedCustomerId: string | null = null;
   form = { name: '', email: '', phone: '' };
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.loadCustomers(); }
+  get customerDropListIds(): string[] {
+    return this.filteredCustomers.map(customer => this.getCustomerDropListId(customer));
+  }
+
+  ngOnInit() {
+    this.loadCustomers();
+  }
 
   loadCustomers() {
     this.loading = true;
     this.api.getCustomers().subscribe({
-      next: (data) => { this.customers = data; this.applyFilter(); this.loading = false; },
-      error: () => { this.loading = false; },
+      next: (data) => {
+        this.customers = this.sortCustomersByStoredOrder(data ?? []);
+        this.persistCustomerOrder();
+        this.applyFilter();
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 
@@ -231,21 +317,67 @@ export class CustomersDashboardComponent implements OnInit {
   }
 
   applyFilter() {
-    if (!this.searchQuery.trim()) {
-      this.filteredCustomers = this.customers;
-    } else {
-      const q = this.searchQuery.toLowerCase();
-      this.filteredCustomers = this.customers.filter(c =>
-        c.name?.toLowerCase().includes(q) ||
-        c.email?.toLowerCase().includes(q) ||
-        c.phone?.includes(q)
-      );
+    const query = this.searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      this.filteredCustomers = [...this.customers];
+      return;
     }
+
+    this.filteredCustomers = this.customers.filter(customer =>
+      customer.name?.toLowerCase().includes(query) ||
+      customer.email?.toLowerCase().includes(query) ||
+      customer.phone?.includes(query)
+    );
   }
 
   getInitials(name: string): string {
     if (!name) return '?';
-    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  trackByCustomerId(index: number, customer: any): string {
+    return customer?._id ?? `${index}`;
+  }
+
+  getCustomerDropListId(customer: any): string {
+    return `customer-drop-${customer?._id ?? customer?.name ?? 'unknown'}`;
+  }
+
+  onCustomerDragStarted(customer: any) {
+    this.draggedCustomerId = customer?._id ?? null;
+  }
+
+  onCustomerEntered(event: CdkDragEnter<any>, targetCustomer: any) {
+    const draggedCustomer = event.item.data;
+
+    if (!draggedCustomer?._id || draggedCustomer._id === targetCustomer?._id) {
+      return;
+    }
+
+    const fromIndex = this.filteredCustomers.findIndex(customer => customer._id === draggedCustomer._id);
+    const toIndex = this.filteredCustomers.findIndex(customer => customer._id === targetCustomer._id);
+
+    if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+      return;
+    }
+
+    moveItemInArray(this.filteredCustomers, fromIndex, toIndex);
+    this.syncCustomersFromFilteredOrder();
+  }
+
+  onCustomerDropped(event: CdkDragDrop<any>) {
+    if (!event.item.data?._id) {
+      return;
+    }
+
+    this.persistCustomerOrder();
+    this.draggedCustomerId = null;
+  }
+
+  onCustomerDragEnded() {
+    this.persistCustomerOrder();
+    this.draggedCustomerId = null;
   }
 
   resetForm() {
@@ -254,28 +386,29 @@ export class CustomersDashboardComponent implements OnInit {
     this.formError = false;
   }
 
-  editCustomer(c: any) {
-    this.editingCustomer = c;
-    this.form = { name: c.name, email: c.email || '', phone: c.phone || '' };
+  editCustomer(customer: any) {
+    this.editingCustomer = customer;
+    this.form = { name: customer.name, email: customer.email || '', phone: customer.phone || '' };
     this.formMsg = '';
     this.formError = false;
     this.showModal = true;
   }
 
   saveCustomer() {
-    if (!this.form.name?.trim()) {
+    if (!this.form.name.trim()) {
       this.formMsg = 'Name is required';
       this.formError = true;
       return;
     }
+
     this.saving = true;
     this.formMsg = '';
 
-    const obs = this.editingCustomer
+    const request = this.editingCustomer
       ? this.api.updateCustomer(this.editingCustomer._id, this.form)
       : this.api.createCustomer(this.form);
 
-    obs.subscribe({
+    request.subscribe({
       next: () => {
         this.saving = false;
         this.showModal = false;
@@ -292,5 +425,58 @@ export class CustomersDashboardComponent implements OnInit {
   deleteCustomer(id: string) {
     if (!confirm('Delete this customer?')) return;
     this.api.deleteCustomer(id).subscribe(() => this.loadCustomers());
+  }
+
+  private syncCustomersFromFilteredOrder() {
+    const reorderedVisibleCustomers = [...this.filteredCustomers];
+    const visibleCustomerIds = new Set(reorderedVisibleCustomers.map(customer => customer._id));
+    let visibleIndex = 0;
+
+    this.customers = this.customers.map(customer =>
+      visibleCustomerIds.has(customer._id) ? reorderedVisibleCustomers[visibleIndex++] : customer
+    );
+  }
+
+  private sortCustomersByStoredOrder(customers: any[]): any[] {
+    const storedOrder = this.readStoredOrder();
+
+    if (!storedOrder.length) {
+      return [...customers];
+    }
+
+    const rankById = new Map(storedOrder.map((id, index) => [id, index]));
+
+    return [...customers].sort((left, right) => {
+      const leftRank = rankById.has(left._id) ? rankById.get(left._id)! : Number.MAX_SAFE_INTEGER;
+      const rightRank = rankById.has(right._id) ? rankById.get(right._id)! : Number.MAX_SAFE_INTEGER;
+      return leftRank - rightRank;
+    });
+  }
+
+  private persistCustomerOrder() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (!this.customers.length) {
+      window.localStorage.removeItem(this.orderStorageKey);
+      return;
+    }
+
+    window.localStorage.setItem(this.orderStorageKey, JSON.stringify(this.customers.map(customer => customer._id)));
+  }
+
+  private readStoredOrder(): string[] {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    try {
+      const rawValue = window.localStorage.getItem(this.orderStorageKey);
+      const parsedValue = JSON.parse(rawValue ?? '[]');
+      return Array.isArray(parsedValue) ? parsedValue.filter((id): id is string => typeof id === 'string') : [];
+    } catch {
+      return [];
+    }
   }
 }
