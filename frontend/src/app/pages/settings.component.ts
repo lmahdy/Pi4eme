@@ -1,0 +1,820 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+type SetupStep = 'idle' | 'qr' | 'confirming' | 'done';
+type DisableStep = 'idle' | 'confirming';
+
+@Component({
+  selector: 'app-settings',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  template: `
+    <div class="page-container">
+      <h2>{{ 'SETTINGS.TITLE' | translate }}</h2>
+
+      <!-- ── Loading ── -->
+      <div *ngIf="loading" class="status-loading">{{ 'SETTINGS.LOADING' | translate }}</div>
+
+      <div *ngIf="!loading" class="sections">
+
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <!-- ── Account Section ── -->
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <section class="section-card" [class.expanded]="activeSection === 'account'"
+                 (click)="activeSection === 'account' ? null : activeSection = 'account'">
+          <div class="section-header">
+            <div class="avatar-small-wrapper">
+              <img *ngIf="photoPreview" [src]="photoPreview" alt="Photo" class="avatar-small" width="40" height="40" loading="lazy" />
+              <div *ngIf="!photoPreview" class="avatar-small-placeholder">
+                {{ userProfile?.name?.charAt(0)?.toUpperCase() || '?' }}
+              </div>
+            </div>
+            <div class="section-info">
+              <h3>{{ 'SETTINGS.ACCOUNT' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.ACCOUNT_DESC' | translate }}</p>
+            </div>
+            <span class="arrow" *ngIf="activeSection !== 'account'">&#8594;</span>
+          </div>
+
+          <!-- Account Content -->
+          <div class="section-content" *ngIf="activeSection === 'account'" (click)="$event.stopPropagation()">
+
+            <!-- ── Profile Photo ── -->
+            <div class="photo-section">
+              <div class="avatar-wrapper">
+                <img *ngIf="photoPreview" [src]="photoPreview" alt="Profile photo" class="avatar-img" width="72" height="72" loading="lazy" />
+                <div *ngIf="!photoPreview" class="avatar-placeholder">
+                  {{ userProfile?.name?.charAt(0)?.toUpperCase() || '?' }}
+                </div>
+                <div *ngIf="photoSaving" class="avatar-saving">{{ 'SETTINGS.SAVING' | translate }}</div>
+              </div>
+              <div class="photo-actions">
+                <label class="btn btn-ghost upload-btn">
+                  {{ 'SETTINGS.CHANGE_PHOTO' | translate }}
+                  <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+                </label>
+                <span class="photo-hint">{{ 'SETTINGS.PHOTO_HINT' | translate }}</span>
+              </div>
+            </div>
+
+            <!-- ── Personal Info ── -->
+            <div class="info-block">
+              <div class="info-block-header">
+                <h4>{{ 'SETTINGS.PERSONAL_INFO' | translate }}</h4>
+                <button *ngIf="!editingUser" class="btn btn-ghost btn-sm" (click)="startEditUser()">{{ 'SETTINGS.EDIT' | translate }}</button>
+              </div>
+
+              <div *ngIf="!editingUser" class="info-rows">
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.NAME' | translate }}</span>
+                  <span class="info-value">{{ userProfile?.name }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.EMAIL' | translate }}</span>
+                  <span class="info-value">{{ userProfile?.email }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.ROLE' | translate }}</span>
+                  <span class="info-value">{{ userProfile?.role }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="editingUser" class="edit-form">
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.NAME' | translate }}</label>
+                  <input type="text" class="form-input" [(ngModel)]="editName" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.EMAIL' | translate }}</label>
+                  <input type="email" class="form-input" [(ngModel)]="editEmail" />
+                </div>
+                <p *ngIf="userSaveError" class="error-msg">{{ userSaveError }}</p>
+                <div class="btn-row">
+                  <button class="btn btn-primary" (click)="saveUser()" [disabled]="userSaving">
+                    {{ userSaving ? ('SETTINGS.SAVING' | translate) : ('SETTINGS.SAVE' | translate) }}
+                  </button>
+                  <button class="btn btn-ghost" (click)="cancelEditUser()" [disabled]="userSaving">{{ 'SETTINGS.CANCEL' | translate }}</button>
+                </div>
+              </div>
+
+              <p *ngIf="userSaveSuccess" class="success-msg">{{ userSaveSuccess }}</p>
+            </div>
+
+            <!-- ── Company Info (CompanyOwner only) ── -->
+            <div *ngIf="isCompanyOwner && companyConfig" class="info-block">
+              <div class="info-block-header">
+                <h4>{{ 'SETTINGS.COMPANY_INFO' | translate }}</h4>
+                <button *ngIf="!editingCompany" class="btn btn-ghost btn-sm" (click)="startEditCompany()">{{ 'SETTINGS.EDIT' | translate }}</button>
+              </div>
+
+              <div *ngIf="!editingCompany" class="info-rows">
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.COMPANY_NAME' | translate }}</span>
+                  <span class="info-value">{{ companyConfig.companyName }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.TAX_RATE' | translate }}</span>
+                  <span class="info-value">{{ companyConfig.taxRate }}%</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.CURRENCY' | translate }}</span>
+                  <span class="info-value">{{ companyConfig.currency }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">{{ 'SETTINGS.NOTIF_EMAIL' | translate }}</span>
+                  <span class="info-value">{{ companyConfig.email }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="editingCompany" class="edit-form">
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.COMPANY_NAME' | translate }}</label>
+                  <input type="text" class="form-input" [(ngModel)]="editCompanyName" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.TAX_RATE' | translate }}</label>
+                  <input type="number" class="form-input" [(ngModel)]="editTaxRate" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.CURRENCY' | translate }}</label>
+                  <input type="text" class="form-input" [(ngModel)]="editCurrency" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">{{ 'SETTINGS.NOTIF_EMAIL' | translate }}</label>
+                  <input type="email" class="form-input" [(ngModel)]="editCompanyEmail" />
+                </div>
+                <p *ngIf="companySaveError" class="error-msg">{{ companySaveError }}</p>
+                <div class="btn-row">
+                  <button class="btn btn-primary" (click)="saveCompany()" [disabled]="companySaving">
+                    {{ companySaving ? ('SETTINGS.SAVING' | translate) : ('SETTINGS.SAVE' | translate) }}
+                  </button>
+                  <button class="btn btn-ghost" (click)="cancelEditCompany()" [disabled]="companySaving">{{ 'SETTINGS.CANCEL' | translate }}</button>
+                </div>
+              </div>
+
+              <p *ngIf="companySaveSuccess" class="success-msg">{{ companySaveSuccess }}</p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <!-- ── 2FA Section ── -->
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <section class="section-card" [class.expanded]="activeSection === '2fa'" (click)="activeSection === '2fa' ? null : activeSection = '2fa'">
+          <div class="section-header">
+            <div class="section-icon">🔐</div>
+            <div class="section-info">
+              <h3>{{ 'SETTINGS.TWO_FACTOR' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.TWO_FACTOR_DESC' | translate }}</p>
+            </div>
+            <span class="badge" [class.badge-on]="twoFactorEnabled" [class.badge-off]="!twoFactorEnabled">
+              {{ twoFactorEnabled ? 'ON' : 'OFF' }}
+            </span>
+          </div>
+
+          <div class="section-content" *ngIf="activeSection === '2fa'">
+
+            <ng-container *ngIf="!twoFactorEnabled">
+              <div *ngIf="enableStep === 'idle'" class="action-area">
+                <button class="btn btn-primary" (click)="startEnable(); $event.stopPropagation()" [disabled]="actionLoading">
+                  {{ actionLoading ? ('SETTINGS.LOADING' | translate) : ('SETTINGS.ENABLE_2FA' | translate) }}
+                </button>
+              </div>
+
+              <div *ngIf="enableStep === 'qr'" class="qr-area" (click)="$event.stopPropagation()">
+                <p class="qr-instructions" [innerText]="'SETTINGS.QR_INSTRUCTIONS' | translate"></p>
+                <div class="qr-wrapper">
+                  <img [src]="qrCode" alt="2FA QR Code" class="qr-image" width="200" height="200" loading="lazy" />
+                </div>
+                <p class="manual-key">
+                  {{ 'SETTINGS.MANUAL_KEY' | translate }}<br>
+                  <code>{{ manualSecret }}</code>
+                </p>
+                <button class="btn btn-primary" (click)="enableStep = 'confirming'">
+                  {{ 'SETTINGS.SCANNED_PROMPT' | translate }}
+                </button>
+                <button class="btn btn-ghost" (click)="cancelEnable()">{{ 'SETTINGS.CANCEL' | translate }}</button>
+              </div>
+
+              <div *ngIf="enableStep === 'confirming'" class="confirm-area" (click)="$event.stopPropagation()">
+                <p class="confirm-desc">{{ 'SETTINGS.ENTER_CODE' | translate }}</p>
+                <input
+                  type="text"
+                  class="otp-input"
+                  [(ngModel)]="confirmCode"
+                  placeholder="000000"
+                  maxlength="6"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                />
+                <p *ngIf="actionError" class="error-msg">{{ actionError }}</p>
+                <div class="btn-row">
+                  <button class="btn btn-success" (click)="confirmEnable()"
+                          [disabled]="actionLoading || confirmCode.length !== 6">
+                    {{ actionLoading ? ('SETTINGS.ACTIVATING' | translate) : ('SETTINGS.ACTIVATE_2FA' | translate) }}
+                  </button>
+                  <button class="btn btn-ghost" (click)="enableStep = 'qr'" [disabled]="actionLoading">
+                    {{ 'SETTINGS.BACK' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="enableStep === 'done'" class="success-banner">
+                2FA is now active. You'll be asked for a code on your next login.
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="twoFactorEnabled">
+              <div *ngIf="disableStep === 'idle'" class="action-area">
+                <button class="btn btn-danger" (click)="disableStep = 'confirming'; $event.stopPropagation()">
+                  {{ 'SETTINGS.DISABLE_2FA' | translate }}
+                </button>
+              </div>
+
+              <div *ngIf="disableStep === 'confirming'" class="confirm-area" (click)="$event.stopPropagation()">
+                <p class="confirm-desc">{{ 'SETTINGS.ENTER_CODE' | translate }}</p>
+                <input
+                  type="text"
+                  class="otp-input"
+                  [(ngModel)]="disableCode"
+                  placeholder="000000"
+                  maxlength="6"
+                  inputmode="numeric"
+                />
+                <p *ngIf="actionError" class="error-msg">{{ actionError }}</p>
+                <div class="btn-row">
+                  <button class="btn btn-danger" (click)="confirmDisable()"
+                          [disabled]="actionLoading || disableCode.length !== 6">
+                    {{ actionLoading ? ('SETTINGS.LOADING' | translate) : ('SETTINGS.CONFIRM_DISABLE' | translate) }}
+                  </button>
+                  <button class="btn btn-ghost" (click)="cancelDisable()" [disabled]="actionLoading">
+                    {{ 'SETTINGS.CANCEL' | translate }}
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <!-- ── Theme Settings Section ── -->
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <section class="section-card" [class.expanded]="activeSection === 'theme'" (click)="activeSection === 'theme' ? null : activeSection = 'theme'">
+          <div class="section-header">
+            <div class="section-icon">🎨</div>
+            <div class="section-info">
+              <h3>{{ 'SETTINGS.THEME' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.THEME_DESC' | translate }}</p>
+            </div>
+            <span class="arrow" *ngIf="activeSection !== 'theme'">&#8594;</span>
+          </div>
+
+          <div class="section-content" *ngIf="activeSection === 'theme'" (click)="$event.stopPropagation()">
+            <div class="theme-options">
+              <div class="theme-block">
+                <h4>{{ 'SETTINGS.MODE' | translate }}</h4>
+                <div class="mode-toggles">
+                  <button class="btn btn-mode" [class.active]="!isDarkMode" (click)="setDarkMode(false)">
+                    <span class="mode-icon">☀️</span> {{ 'SETTINGS.LIGHT' | translate }}
+                  </button>
+                  <button class="btn btn-mode" [class.active]="isDarkMode" (click)="setDarkMode(true)">
+                    <span class="mode-icon">🌙</span> {{ 'SETTINGS.DARK' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="theme-block">
+                <h4>{{ 'SETTINGS.COLOR_THEME' | translate }}</h4>
+                <div class="color-palette">
+                  <div class="color-swatch-wrapper" [class.active]="currentTheme === 'default'" (click)="setColorTheme('default')">
+                    <div class="color-swatch" style="background: linear-gradient(135deg, #052659, #5483B3);"></div>
+                    <span>{{ 'SETTINGS.THEME_OCEAN' | translate }}</span>
+                  </div>
+                  <div class="color-swatch-wrapper" [class.active]="currentTheme === 'emerald'" (click)="setColorTheme('emerald')">
+                    <div class="color-swatch" style="background: linear-gradient(135deg, #065f46, #10b981);"></div>
+                    <span>{{ 'SETTINGS.THEME_EMERALD' | translate }}</span>
+                  </div>
+                  <div class="color-swatch-wrapper" [class.active]="currentTheme === 'sunset'" (click)="setColorTheme('sunset')">
+                    <div class="color-swatch" style="background: linear-gradient(135deg, #9a3412, #f97316);"></div>
+                    <span>{{ 'SETTINGS.THEME_SUNSET' | translate }}</span>
+                  </div>
+                  <div class="color-swatch-wrapper" [class.active]="currentTheme === 'purple'" (click)="setColorTheme('purple')">
+                    <div class="color-swatch" style="background: linear-gradient(135deg, #5b21b6, #8b5cf6);"></div>
+                    <span>{{ 'SETTINGS.THEME_AMETHYST' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <!-- ── Face Recognition Section ── -->
+        <!-- ══════════════════════════════════════════════════════════════════════ -->
+        <section class="section-card clickable" routerLink="/face-verify">
+          <div class="section-header">
+            <div class="section-icon">📷</div>
+            <div class="section-info">
+              <h3>{{ 'SETTINGS.FACE_RECOGNITION' | translate }}</h3>
+              <p class="section-desc">{{ 'SETTINGS.FACE_DESC' | translate }}</p>
+            </div>
+            <span class="arrow">→</span>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  `,
+  styles: [`
+    .page-container { max-width: 620px; margin: 40px auto; padding: 0 16px; }
+
+    h2 { margin: 0 0 24px; font-size: 24px; font-weight: 800; color: #021024; }
+
+    .sections { display: flex; flex-direction: column; gap: 16px; }
+
+    .section-card {
+      border: 1.5px solid rgba(84,131,179,0.2); border-radius: 14px; padding: 22px;
+      background: #fff; transition: transform, opacity, color, background-color, border-color, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(2,16,36,0.06);
+    }
+    .section-card.clickable { cursor: pointer; }
+    .section-card.clickable:hover { box-shadow: 0 4px 16px rgba(2,16,36,0.1); border-color: #7DA0CA; }
+    .section-card.expanded { border-color: #5483B3; box-shadow: 0 4px 20px rgba(84,131,179,0.15); }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .section-info { flex: 1; }
+    .section-info h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary, #021024); }
+    .section-desc { margin: 2px 0 0; font-size: 13px; color: var(--c-mid, #5483B3); }
+    .arrow { color: var(--c-light, #7DA0CA); transition: transform 0.2s; }
+
+    .badge {
+      font-size: 11px; font-weight: 700; padding: 4px 10px;
+      border-radius: 99px; white-space: nowrap; flex-shrink: 0;
+      letter-spacing: 0.4px; text-transform: uppercase;
+    }
+    .section-card:hover .section-icon { background: var(--c-dark, #052659); color: white; transform: scale(1.05); }
+    .badge-on  { background: #d1fae5; color: #059669; border: 1px solid #a9dfbf; }
+    .badge-off { background: #f0f6ff; color: #5483B3; border: 1px solid #C1E8FF; }
+
+    .section-content {
+      margin-top: 18px; padding-top: 18px;
+      border-top: 1px solid rgba(193,232,255,0.6);
+    }
+
+    .status-loading { padding: 40px; text-align: center; color: #7DA0CA; font-weight: 500; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 10px 20px; border-radius: 8px; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+      transition: transform, opacity, color, background-color, border-color, box-shadow 0.18s ease;
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--c-dark, #052659), var(--c-mid, #5483B3)); color: #fff; box-shadow: 0 2px 8px rgba(5,38,89,0.25); }
+    .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--c-darkest, #021024), var(--c-dark, #052659)); box-shadow: 0 4px 14px rgba(5,38,89,0.35); transform: translateY(-1px); }
+    .btn-success { background: linear-gradient(135deg, #059669, #10b981); color: #fff; box-shadow: 0 2px 8px rgba(5,150,105,0.25); }
+    .btn-success:hover:not(:disabled) { background: linear-gradient(135deg, #047857, #059669); transform: translateY(-1px); }
+    .btn-danger { background: linear-gradient(135deg, #c0392b, #ef4444); color: #fff; box-shadow: 0 2px 8px rgba(192,57,43,0.25); }
+    .btn-danger:hover:not(:disabled) { background: linear-gradient(135deg, #922b21, #c0392b); transform: translateY(-1px); }
+    .btn-ghost { background: var(--c-bg, #f0f6ff); color: var(--c-dark, #052659); border: 1.5px solid var(--c-lightest, #C1E8FF); }
+    .btn-ghost:hover:not(:disabled) { background: var(--c-lightest, #C1E8FF); border-color: var(--c-light, #7DA0CA); }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+    /* ── QR area ── */
+    .qr-area { display: flex; flex-direction: column; gap: 14px; }
+    .qr-instructions { margin: 0; font-size: 13px; color: #374151; line-height: 1.7; white-space: pre-line; }
+    .qr-wrapper {
+      display: flex; justify-content: center;
+      background: #fff; border: 1.5px solid #C1E8FF;
+      border-radius: 12px; padding: 16px; width: fit-content;
+      box-shadow: 0 4px 16px rgba(2,16,36,0.08);
+    }
+    .qr-image { width: 200px; height: 200px; display: block; }
+    .manual-key {
+      font-size: 12px; color: #5483B3; margin: 0;
+      background: #f0f6ff; padding: 12px; border-radius: 8px;
+      border: 1px solid #C1E8FF;
+    }
+    .manual-key code { font-family: monospace; letter-spacing: 1px; color: #021024; font-size: 13px; font-weight: 700; }
+
+    /* ── Confirm area ── */
+    .confirm-area { display: flex; flex-direction: column; gap: 12px; }
+    .confirm-desc { margin: 0; font-size: 13px; color: #5483B3; }
+
+    .otp-input {
+      width: 150px; text-align: center; font-size: 26px; letter-spacing: 6px;
+      padding: 12px; border-radius: 10px; border: 2px solid #5483B3;
+      font-weight: 700; color: #052659; font-family: monospace;
+      background: #f0f6ff;
+    }
+    .otp-input:focus { outline: none; border-color: #052659; box-shadow: 0 0 0 3px rgba(84,131,179,0.2); }
+
+    .error-msg { color: #c0392b; font-size: 13px; margin: 0; }
+
+    .action-area { padding: 4px 0; }
+
+    .success-banner {
+      background: #e9f7ef; color: #059669;
+      border: 1px solid #a9dfbf;
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 14px; font-weight: 600;
+    }
+
+    /* ── Account: Avatar (small in header) ── */
+    .avatar-small-wrapper { width: 40px; height: 40px; flex-shrink: 0; }
+    .avatar-small {
+      width: 40px; height: 40px; border-radius: 50%;
+      object-fit: cover; border: 2px solid #C1E8FF;
+    }
+    .avatar-small-placeholder {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #052659, #5483B3); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700;
+    }
+
+    /* ── Account: Photo section ── */
+    .photo-section {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 18px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .avatar-wrapper {
+      position: relative; width: 72px; height: 72px; flex-shrink: 0;
+    }
+    .avatar-img {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover; border: 3px solid #C1E8FF;
+    }
+    .avatar-placeholder {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #052659, #5483B3); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 700;
+    }
+    .avatar-saving {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(2,16,36,.6); color: #C1E8FF;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+    }
+    .section-icon { 
+      width: 44px; height: 44px; border-radius: 12px; 
+      background: var(--c-bg, #f0f6ff); 
+      color: var(--c-dark, #052659);
+      display: flex; align-items: center; justify-content: center; font-size: 20px; transition: transform, opacity, color, background-color, border-color, box-shadow 0.2s; 
+    }
+    .photo-actions { display: flex; flex-direction: column; gap: 6px; }
+    .upload-btn { cursor: pointer; }
+    .photo-hint { font-size: 11px; color: #7DA0CA; }
+
+    /* ── Account: Info blocks ── */
+    .info-block {
+      margin-top: 18px; padding-top: 18px;
+      border-top: 1px solid rgba(193,232,255,0.5);
+    }
+    .info-block:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    .info-block-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .info-block-header h4 {
+      margin: 0; font-size: 14px; font-weight: 700; color: #021024;
+    }
+
+    .info-rows { display: flex; flex-direction: column; gap: 4px; }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 12px; border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .info-row:hover { background: #f0f6ff; }
+    .info-label { font-size: 13px; color: #5483B3; font-weight: 500; }
+    .info-value { font-size: 13px; color: #021024; font-weight: 600; }
+
+    /* ── Account: Edit form ── */
+    .edit-form { display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 11.5px; color: var(--c-mid, #5483B3); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .form-input {
+      padding: 10px 14px; border: 1.5px solid var(--c-lightest, #C1E8FF); border-radius: 8px;
+      font-size: 14px; color: var(--c-darkest, #021024); font-family: inherit;
+      background: #f9fdff; outline: none; transition: transform, opacity, color, background-color, border-color, box-shadow 0.18s;
+    }
+    .form-input:focus {
+      border-color: var(--c-mid, #5483B3);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(84,131,179,0.15);
+    }
+
+    .success-msg {
+      color: #059669; font-size: 13px; margin: 8px 0 0;
+      background: #e9f7ef; padding: 10px 14px; border-radius: 8px;
+      border: 1px solid #a9dfbf; font-weight: 500;
+    }
+    
+    /* ── Theme Options ── */
+    .theme-options { display: flex; flex-direction: column; gap: 24px; padding-top: 8px; }
+    .theme-block h4 { margin: 0 0 12px; font-size: 14px; color: var(--text-primary, #021024); }
+    .mode-toggles { display: flex; gap: 12px; }
+    .btn-mode { 
+      flex: 1; padding: 12px; background: transparent; border: 2px solid var(--border-color, #e0e0e0);
+      color: var(--text-primary, #021024); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    :root.dark-theme .btn-mode { color: #ffffff !important; }
+    .btn-mode.active { border-color: var(--c-mid, #5483B3); background: rgba(84, 131, 179, 0.1); }
+    
+    .color-palette { display: flex; gap: 16px; flex-wrap: wrap; }
+    .color-swatch-wrapper {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      cursor: pointer; padding: 12px; border-radius: 12px; border: 2px solid transparent;
+      transition: transform, opacity, color, background-color, border-color, box-shadow 0.2s;
+    }
+    .color-swatch-wrapper:hover { background: rgba(84, 131, 179, 0.05); }
+    .color-swatch-wrapper.active { border-color: var(--c-mid, #5483B3); background: rgba(84, 131, 179, 0.1); }
+    .color-swatch { width: 48px; height: 48px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .color-swatch-wrapper span { font-size: 12px; font-weight: 600; color: var(--text-primary, #021024); }
+    :root.dark-theme .color-swatch-wrapper span { color: #ffffff !important; }
+  `],
+})
+export class SettingsComponent implements OnInit {
+  loading = true;
+  twoFactorEnabled = false;
+  activeSection: 'account' | '2fa' | 'face' | 'theme' | null = null;
+  
+  // ── Theme section ──
+  isDarkMode = false;
+  currentTheme = 'default';
+
+  // ── Account section ──
+  userProfile: any = null;
+  companyConfig: any = null;
+  isCompanyOwner = false;
+
+  editingUser = false;
+  editName = '';
+  editEmail = '';
+  userSaving = false;
+  userSaveError = '';
+  userSaveSuccess = '';
+
+  editingCompany = false;
+  editCompanyName = '';
+  editTaxRate = 0;
+  editCurrency = '';
+  editCompanyEmail = '';
+  companySaving = false;
+  companySaveError = '';
+  companySaveSuccess = '';
+
+  photoPreview: string | null = null;
+  photoSaving = false;
+
+  // ── 2FA section ──
+  enableStep: SetupStep = 'idle';
+  qrCode = '';
+  manualSecret = '';
+  confirmCode = '';
+
+  disableStep: DisableStep = 'idle';
+  disableCode = '';
+
+  actionLoading = false;
+  actionError = '';
+
+  constructor(
+    private authService: AuthService, 
+    private translate: TranslateService,
+    private themeService: ThemeService
+  ) { }
+
+  ngOnInit() {
+    this.isCompanyOwner = this.authService.getUserRole() === 'CompanyOwner';
+
+    // Load theme settings
+    this.themeService.isDarkMode$.subscribe(isDark => this.isDarkMode = isDark);
+    this.themeService.colorTheme$.subscribe(theme => this.currentTheme = theme);
+
+    // Load profile
+    this.authService.getProfile().subscribe({
+      next: (profile: any) => {
+        this.userProfile = profile;
+        this.photoPreview = profile.photo || null;
+      },
+      error: () => { },
+    });
+
+    // Load company config (CompanyOwner only)
+    if (this.isCompanyOwner) {
+      this.authService.getCompanyConfig().subscribe({
+        next: (config: any) => { this.companyConfig = config; },
+        error: () => { },
+      });
+    }
+
+    // Load 2FA status
+    this.authService.get2faStatus().subscribe({
+      next: (res) => {
+        this.twoFactorEnabled = res.enabled;
+        this.loading = false;
+      },
+      error: () => { this.loading = false; },
+    });
+  }
+
+  // ── Account: User editing ──
+
+  startEditUser() {
+    this.editName = this.userProfile.name;
+    this.editEmail = this.userProfile.email;
+    this.editingUser = true;
+    this.userSaveError = '';
+    this.userSaveSuccess = '';
+  }
+
+  cancelEditUser() {
+    this.editingUser = false;
+    this.userSaveError = '';
+  }
+
+  saveUser() {
+    this.userSaving = true;
+    this.userSaveError = '';
+    this.userSaveSuccess = '';
+    this.authService.updateProfile({ name: this.editName, email: this.editEmail }).subscribe({
+      next: (updated: any) => {
+        this.userProfile = updated;
+        this.editingUser = false;
+        this.userSaving = false;
+        this.userSaveSuccess = 'Profile updated successfully.';
+      },
+      error: (err: any) => {
+        this.userSaving = false;
+        this.userSaveError = err.error?.message || 'Failed to update profile.';
+      },
+    });
+  }
+
+  // ── Account: Company editing ──
+
+  startEditCompany() {
+    this.editCompanyName = this.companyConfig.companyName;
+    this.editTaxRate = this.companyConfig.taxRate;
+    this.editCurrency = this.companyConfig.currency;
+    this.editCompanyEmail = this.companyConfig.email;
+    this.editingCompany = true;
+    this.companySaveError = '';
+    this.companySaveSuccess = '';
+  }
+
+  cancelEditCompany() {
+    this.editingCompany = false;
+    this.companySaveError = '';
+  }
+
+  saveCompany() {
+    this.companySaving = true;
+    this.companySaveError = '';
+    this.companySaveSuccess = '';
+    this.authService.updateCompanyConfig({
+      companyName: this.editCompanyName,
+      taxRate: this.editTaxRate,
+      currency: this.editCurrency,
+      email: this.editCompanyEmail,
+    }).subscribe({
+      next: (updated: any) => {
+        this.companyConfig = updated;
+        this.editingCompany = false;
+        this.companySaving = false;
+        this.companySaveSuccess = 'Company info updated successfully.';
+      },
+      error: (err: any) => {
+        this.companySaving = false;
+        this.companySaveError = err.error?.message || 'Failed to update company info.';
+      },
+    });
+  }
+
+  // ── Account: Photo upload ──
+
+  onPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Photo must be under 2 MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      this.photoPreview = base64;
+      this.photoSaving = true;
+      this.authService.updatePhoto(base64).subscribe({
+        next: () => {
+          this.photoSaving = false;
+          if (this.userProfile) this.userProfile.photo = base64;
+        },
+        error: () => {
+          this.photoSaving = false;
+          this.photoPreview = this.userProfile?.photo || null;
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── 2FA: Enable flow ──
+
+  startEnable() {
+    this.actionLoading = true;
+    this.actionError = '';
+    this.authService.generate2fa().subscribe({
+      next: (res) => {
+        this.qrCode = res.qrCode;
+        this.manualSecret = res.secret;
+        this.actionLoading = false;
+        this.enableStep = 'qr';
+      },
+      error: (err) => {
+        this.actionLoading = false;
+        this.actionError = err.error?.message || 'Failed to generate QR code.';
+      },
+    });
+  }
+
+  confirmEnable() {
+    this.actionLoading = true;
+    this.actionError = '';
+    this.authService.enable2fa(this.confirmCode).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.twoFactorEnabled = true;
+        this.enableStep = 'done';
+        this.confirmCode = '';
+      },
+      error: (err) => {
+        this.actionLoading = false;
+        this.actionError = err.error?.message || 'Invalid code. Try again.';
+        this.confirmCode = '';
+      },
+    });
+  }
+
+  cancelEnable() {
+    this.enableStep = 'idle';
+    this.qrCode = '';
+    this.manualSecret = '';
+    this.confirmCode = '';
+    this.actionError = '';
+  }
+
+  // ── 2FA: Disable flow ──
+
+  confirmDisable() {
+    this.actionLoading = true;
+    this.actionError = '';
+    this.authService.disable2fa(this.disableCode).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.twoFactorEnabled = false;
+        this.disableStep = 'idle';
+        this.disableCode = '';
+      },
+      error: (err) => {
+        this.actionLoading = false;
+        this.actionError = err.error?.message || 'Invalid code. Try again.';
+        this.disableCode = '';
+      },
+    });
+  }
+
+  cancelDisable() {
+    this.disableStep = 'idle';
+    this.disableCode = '';
+    this.actionError = '';
+  }
+
+  // ── Theme Management ──
+
+  setDarkMode(isDark: boolean) {
+    this.themeService.setTheme(isDark);
+  }
+
+  setColorTheme(theme: string) {
+    this.themeService.setColorTheme(theme);
+  }
+}

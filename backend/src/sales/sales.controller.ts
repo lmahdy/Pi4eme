@@ -1,0 +1,97 @@
+import {
+    Controller, Get, Post, Delete, Body, Param, Query,
+    UseGuards, UseInterceptors, UploadedFile, Req,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { SalesService } from './sales.service';
+
+@UseGuards(JwtAuthGuard)
+@Controller('sales')
+export class SalesController {
+    constructor(private readonly svc: SalesService) { }
+
+    // POST /sales/upload/preview — Parse CSV, return headers + suggested mapping
+    @Post('upload/preview')
+    @UseInterceptors(FileInterceptor('file'))
+    preview(@UploadedFile() file: Express.Multer.File) {
+        const csvContent = file.buffer.toString('utf-8');
+        return this.svc.previewCsv(csvContent);
+    }
+
+    // POST /sales/upload/confirm — Import with user-confirmed mapping
+    @Post('upload/confirm')
+    @UseInterceptors(FileInterceptor('file'))
+    async confirm(
+        @UploadedFile() file: Express.Multer.File,
+        @Body('mapping') mappingJson: string,
+        @Req() req: any,
+    ) {
+        const csvContent = file.buffer.toString('utf-8');
+        const mapping = JSON.parse(mappingJson);
+        return this.svc.importCsvWithMapping(req.user.companyId, csvContent, mapping);
+    }
+
+    // POST /sales/upload — Legacy CSV upload (auto-mapping)
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file'))
+    async upload(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+        const csvContent = file.buffer.toString('utf-8');
+        return this.svc.importCsv(req.user.companyId, csvContent);
+    }
+
+    // POST /sales — manual entry
+    @Post()
+    create(@Body() body: any, @Req() req: any) {
+        return this.svc.create(req.user.companyId, body);
+    }
+
+    // GET /sales/list
+    @Get('list')
+    findAll(@Req() req: any) {
+        return this.svc.findAll(req.user.companyId);
+    }
+
+    // GET /sales/kpis
+    @Get('kpis')
+    getKpis(@Req() req: any) {
+        return this.svc.getKpis(req.user.companyId);
+    }
+
+    // GET /sales/revenue-over-time?interval=day|month
+    @Get('revenue-over-time')
+    revenueOverTime(@Req() req: any, @Query('interval') interval: string) {
+        return this.svc.revenueOverTime(req.user.companyId, interval || 'day');
+    }
+
+    // GET /sales/revenue-by-product
+    @Get('revenue-by-product')
+    revenueByProduct(@Req() req: any) {
+        return this.svc.revenueByProduct(req.user.companyId);
+    }
+
+    // GET /sales/revenue-by-customer
+    @Get('revenue-by-customer')
+    revenueByCustomer(@Req() req: any) {
+        return this.svc.revenueByCustomer(req.user.companyId);
+    }
+
+    // POST /sales/upload-image — Upload invoice image, extract via OCR, return preview
+    @Post('upload-image')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+        return this.svc.uploadInvoiceImage(file.buffer, file.originalname);
+    }
+
+    // POST /sales/ocr/confirm — Save user-reviewed OCR rows through ETL pipeline
+    @Post('ocr/confirm')
+    async confirmOcr(@Body() body: { rows: any[] }, @Req() req: any) {
+        return this.svc.confirmOcrRows(req.user.companyId, body.rows);
+    }
+
+    // DELETE /sales/:id
+    @Delete(':id')
+    async remove(@Param('id') id: string, @Req() req: any) {
+        return this.svc.delete(req.user.companyId, id);
+    }
+}

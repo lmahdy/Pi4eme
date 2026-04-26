@@ -1,0 +1,276 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private apiBase = 'http://localhost:3000';
+
+  constructor(private http: HttpClient) { }
+
+  // ── Purchases ────────────────────────────────────────────────
+  previewPurchasesCsv(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/purchases/upload/preview`, fd);
+  }
+
+  confirmPurchasesCsv(file: File, mapping: Record<string, string>, isRequest = false) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('mapping', JSON.stringify(mapping));
+    fd.append('isRequest', isRequest ? 'true' : 'false');
+    return this.http.post<any>(`${this.apiBase}/purchases/upload/confirm`, fd);
+  }
+
+  uploadPurchases(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/purchases/upload`, formData);
+  }
+
+  createPurchase(data: any) {
+    return this.http.post<any>(`${this.apiBase}/purchases`, data);
+  }
+
+  bulkCreatePurchases(data: any[]) {
+    return this.http.post<any>(`${this.apiBase}/purchases/bulk`, { purchases: data });
+  }
+
+  getPurchases() {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/list`);
+  }
+
+  getPurchaseKpis() {
+    return this.http.get<any>(`${this.apiBase}/purchases/kpis`);
+  }
+
+  getPurchasesOverTime(interval: 'day' | 'month' = 'day') {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/over-time?interval=${interval}`);
+  }
+
+  getPurchasesBySupplier() {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/by-supplier`);
+  }
+
+  getPurchasesByCategory() {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/by-category`);
+  }
+
+  deletePurchase(id: string) {
+    return this.http.delete(`${this.apiBase}/purchases/${id}`);
+  }
+
+  getPurchaseRequests(filters: any = {}) {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/requests`, { params: filters });
+  }
+
+  getPurchaseReviewStats() {
+    return this.http.get<any>(`${this.apiBase}/purchases/review-stats`);
+  }
+
+  getPurchaseHistory(filters: any = {}) {
+    return this.http.get<any[]>(`${this.apiBase}/purchases/history`, { params: filters });
+  }
+
+  reviewPurchaseRequest(id: string, review: { status: 'APPROVED' | 'REJECTED'; comment?: string }) {
+    return this.http.post<any>(`${this.apiBase}/purchases/${id}/review`, review);
+  }
+
+  // ── Sales ────────────────────────────────────────────────────
+  previewSalesCsv(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/sales/upload/preview`, fd);
+  }
+
+  confirmSalesCsv(file: File, mapping: Record<string, string>) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('mapping', JSON.stringify(mapping));
+    return this.http.post<any>(`${this.apiBase}/sales/upload/confirm`, fd);
+  }
+
+  uploadSales(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/sales/upload`, formData);
+  }
+
+  createSale(data: any) {
+    return this.http.post<any>(`${this.apiBase}/sales`, data);
+  }
+
+  bulkCreateSales(data: any[]) {
+    return this.http.post<any>(`${this.apiBase}/sales/bulk`, { sales: data });
+  }
+
+  uploadSaleImage(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/sales/upload-image`, fd);
+  }
+
+  confirmSalesOcr(rows: any[]) {
+    return this.http.post<any>(`${this.apiBase}/sales/ocr/confirm`, { rows });
+  }
+
+  uploadPurchaseImage(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/purchases/upload-image`, fd);
+  }
+
+  confirmPurchasesOcr(rows: any[], isRequest = false) {
+    return this.http.post<any>(`${this.apiBase}/purchases/ocr/confirm`, { rows, isRequest });
+  }
+
+  getSales() {
+    return this.http.get<any[]>(`${this.apiBase}/sales/list`);
+  }
+
+  getSaleKpis() {
+    return this.http.get<any>(`${this.apiBase}/sales/kpis`);
+  }
+
+  getRevenueOverTime(interval: 'day' | 'month' = 'day') {
+    return this.http.get<any[]>(`${this.apiBase}/sales/revenue-over-time?interval=${interval}`);
+  }
+
+  getRevenueByProduct() {
+    return this.http.get<any[]>(`${this.apiBase}/sales/revenue-by-product`);
+  }
+
+  getRevenueByCustomer() {
+    return this.http.get<any[]>(`${this.apiBase}/sales/revenue-by-customer`);
+  }
+
+  deleteSale(id: string) {
+    return this.http.delete(`${this.apiBase}/sales/${id}`);
+  }
+
+  // ── Customers ───────────────────────────────────────────────
+  getCustomers() {
+    return this.http.get<any[]>(`${this.apiBase}/customers`);
+  }
+
+  searchCustomers(query: string) {
+    return this.http.get<any[]>(`${this.apiBase}/customers/search?query=${encodeURIComponent(query)}`);
+  }
+
+  createCustomer(data: any) {
+    return this.http.post<any>(`${this.apiBase}/customers`, data);
+  }
+
+  updateCustomer(id: string, data: any) {
+    return this.http.patch<any>(`${this.apiBase}/customers/${id}`, data);
+  }
+
+  deleteCustomer(id: string) {
+    return this.http.delete(`${this.apiBase}/customers/${id}`);
+  }
+
+  // ── Suppliers ───────────────────────────────────────────────
+  getSuppliers() {
+    return this.http.get<any[]>(`${this.apiBase}/suppliers`);
+  }
+
+  searchSuppliers(query: string) {
+    return this.http.get<any[]>(`${this.apiBase}/suppliers/search?query=${encodeURIComponent(query)}`);
+  }
+
+  createSupplier(data: any) {
+    return this.http.post<any>(`${this.apiBase}/suppliers`, data);
+  }
+
+  updateSupplier(id: string, data: any) {
+    return this.http.patch<any>(`${this.apiBase}/suppliers/${id}`, data);
+  }
+
+  deleteSupplier(id: string) {
+    return this.http.delete(`${this.apiBase}/suppliers/${id}`);
+  }
+
+  // ── OCR ──────────────────────────────────────────────────────
+  ocrInvoice(file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<any>(`${this.apiBase}/ocr/extract`, fd);
+  }
+
+  // ── Analytics / AI ──────────────────────────────────────────
+  getStockoutRisks() {
+    return this.http.get<any[]>(`${this.apiBase}/analytics/stockout-risks`);
+  }
+
+  getHealthScore() {
+    return this.http.get<any>(`${this.apiBase}/analytics/health-score`);
+  }
+
+  getSalesForecast() {
+    return this.http.get<any>(`${this.apiBase}/analytics/sales-forecast`);
+  }
+
+  getProductPerformance() {
+    return this.http.get<any[]>(`${this.apiBase}/analytics/product-performance`);
+  }
+
+  // —— Accountant AI Reports ———————————————————————————————————————————————
+  generateAccountantAiReport(payload: {
+    includeWebResearch?: boolean;
+    focusAreas?: string[];
+    customInstructions?: string;
+  }) {
+    return this.http.post<any>(`${this.apiBase}/accountant-ai-reports/generate`, payload);
+  }
+
+  regenerateAccountantAiReport(
+    reportId: string,
+    payload: { includeWebResearch?: boolean; focusAreas?: string[]; customInstructions?: string },
+  ) {
+    return this.http.post<any>(`${this.apiBase}/accountant-ai-reports/${reportId}/regenerate`, payload);
+  }
+
+  getAccountantAiReports(limit = 30) {
+    return this.http.get<any[]>(`${this.apiBase}/accountant-ai-reports?limit=${limit}`);
+  }
+
+  getAccountantAiReportById(reportId: string) {
+    return this.http.get<any>(`${this.apiBase}/accountant-ai-reports/${reportId}`);
+  }
+
+  updateAccountantAiReportDraft(
+    reportId: string,
+    payload: { editedDraft: string; shortEmailSummary?: string },
+  ) {
+    return this.http.patch<any>(`${this.apiBase}/accountant-ai-reports/${reportId}/draft`, payload);
+  }
+
+  approveAndSendAccountantAiReport(
+    reportId: string,
+    payload: { finalApprovedText?: string; shortEmailSummary?: string },
+  ) {
+    return this.http.post<any>(`${this.apiBase}/accountant-ai-reports/${reportId}/approve-send`, payload);
+  }
+
+  // ── Stock / Inventory ────────────────────────────────────────
+  getStock() {
+    return this.http.get<any[]>(`${this.apiBase}/inventory/stock`);
+  }
+
+  getInventoryAlerts() {
+    return this.http.get<any[]>(`${this.apiBase}/inventory/alerts`);
+  }
+
+  // ── Admin ────────────────────────────────────────────────────
+  getAllUsers() {
+    return this.http.get<any[]>(`${this.apiBase}/users`);
+  }
+
+  updateUserStatus(userId: string, status: 'active' | 'inactive') {
+    return this.http.patch(`${this.apiBase}/users/${userId}/status`, { status });
+  }
+
+  deleteUser(userId: string) {
+    return this.http.delete(`${this.apiBase}/users/${userId}`);
+  }
+}

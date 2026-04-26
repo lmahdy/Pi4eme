@@ -1,0 +1,66 @@
+<a href="#main-content" class="skip-link">Passer au contenu principal</a>
+
+<div class="app-shell">
+  <header class="app-header" role="banner">
+    <div class="brand">
+      <picture>
+        <source srcset="assets/tenexa-logo.webp" type="image/webp">
+        <img class="brand-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa — Tableau de bord Business Intelligence"
+             width="40" height="40" fetchpriority="high" />
+      </picture>
+      <div class="brand-text">
+        <span class="brand-title">Tenexa</span>
+        <span class="brand-sub">{{ "NAV.BRAND_SUB" | translate }}</span>
+      </div>
+    </div>
+    @if (showNavigation) {
+      <nav class="nav" aria-label="Navigation principale">
+        <div class="nav-center">
+          @if (isAdmin$ | async) {
+            <a routerLink="/admin" routerLinkActive="active-link">{{ "NAV.ADMIN" | translate }}</a>
+          }
+          <a routerLink="/settings" routerLinkActive="active-link">Settings</a>
+          <a routerLink="/login" (click)="logout()">{{ "NAV.LOGOUT" | translate }}</a>
+        </div>
+      </nav>
+    }
+    <div class="header-controls">
+      <div class="theme-selector">
+        <button
+          class="theme-btn"
+          (click)="toggleTheme()"
+          [attr.aria-label]="(isDarkMode$ | async) ? 'Passer en mode clair' : 'Passer en mode sombre'"
+          [title]="(isDarkMode$ | async) ? 'Light Mode' : 'Dark Mode'">
+          <span *ngIf="isDarkMode$ | async" class="theme-icon" aria-hidden="true">☀️</span>
+          <span *ngIf="!(isDarkMode$ | async)" class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+      </div>
+      <div class="lang-selector">
+        <label for="lang-select" class="visually-hidden">Choisir la langue</label>
+        <select id="lang-select" #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang" aria-label="Sélectionner la langue">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    @if (showNavigation) {
+      <app-sidebar></app-sidebar>
+    }
+    <main id="main-content" class="app-main" [class.with-sidebar]="showNavigation" role="main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Chatbot: deferred until browser is idle (after main content renders) -->
+  @if (showNavigation) {
+    @defer (on idle) {
+      <app-chatbot></app-chatbot>
+    } @placeholder {
+      <!-- empty placeholder — FAB button appears after idle -->
+    }
+  }
+</div>
