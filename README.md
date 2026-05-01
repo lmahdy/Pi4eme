@@ -1,3 +1,12 @@
+## Live Deployment
+
+Frontend URL: https://pi4eme.vercel.app  
+Backend API URL: https://pi4eme-backend.onrender.com  
+ML Service URL: https://pi4eme-ml-service.onrender.com  
+AI Agent Service URL: https://pi4eme-ai-agent.onrender.com  
+
+The application is deployed online for the final commercial evaluation.
+
 État du Projet:
 Backend (NestJS) : Lancé sur http://localhost:3000
 Frontend (Angular) : Lancé sur http://localhost:4200
