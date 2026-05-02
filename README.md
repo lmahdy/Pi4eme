@@ -4,14 +4,20 @@ A full-stack BI and accounting management platform for companies, accountants, a
 
 🔗 Live Demo: https://pi4eme-1.vercel.app/sales
 
-🚀 Project Status
-ServiceStatusURLBackend (NestJS)✅ Runninghttp://localhost:3000Frontend (Angular)✅ Runninghttp://localhost:4200Database (MongoDB)✅ ConnectedPort 27017
+Project Status
+ServiceStatusURLBackend (NestJS)
+Runninghttp://localhost:3000Frontend (Angular)
+Runninghttp://localhost:4200Database (MongoDB)
+ConnectedPort 27017
 
-🔐 Test Credentials (Auto-seeded)
+Test Credentials (Auto-seeded)
 The system is automatically initialized with the following accounts:
-RoleEmailPassword🏢 Company Ownerowner@demo.comPassword123!🧾 Accountantaccountant@demo.comPassword123!🛡️ Adminadmin@bi.platformadmin123
+RoleEmailPassword:
+Company Ownerowner@demo.comPassword123!
+Accountantaccountant@demo.comPassword123!
+Adminadmin@bi.platformadmin123
 
-⚙️ Setup & Installation
+Setup & Installation
 1. Environment Configuration
 Create a .env file in the backend/ folder (use backend/.env.example as a reference):
 envMONGODB_URI=mongodb://localhost:27017/pi4eme
@@ -49,7 +55,7 @@ cd ai-agent-service
 pip install -r requirements.txt
 python app.py
 
-🏗️ Architecture
+Architecture
 Angular Frontend  (localhost:4200)
         │
         ▼
@@ -65,17 +71,17 @@ ML Service   AI Agent Service
         ▼
     MongoDB  (port 27017)
 
-🧠 AI Features
+AI Features
 
 Invoice OCR — Upload a photo of an invoice; Tesseract extracts products, quantities, and prices automatically
 AI Accountant Reports — Google Gemini generates structured financial reports with risks, opportunities, and action plans
 ML Forecasting — Stockout prediction and sales forecasting from historical data
 
 
-🛠️ Tech Stack
+Tech Stack
 LayerTechnologyFrontendAngular (TypeScript)BackendNestJS (Node.js)AI AgentPython Flask + Google Gemini 1.5 FlashML / OCRPython Flask + Tesseract OCRDatabaseMongoDBAuthJWTDeploymentVercel
 
-📁 Project Structure
+ Project Structure
 Pi4eme/
 ├── frontend/          # Angular SPA
 ├── backend/           # NestJS REST API
