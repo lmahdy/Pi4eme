@@ -16,9 +16,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
         <div class="card-header">
           <picture>
             <source srcset="assets/tenexa-logo.webp" type="image/webp">
-            <img class="card-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa Logo" width="60" height="60" fetchpriority="high" />
+            <img class="card-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa Logo" width="60" height="60" fetchpriority="high" loading="eager" />
           </picture>
-          <h2>{{ 'AUTH.SIGNUP_TITLE' | translate }}</h2>
+          <h1 class="signup-title">{{ 'AUTH.SIGNUP_TITLE' | translate }}</h1>
           <p>{{ 'AUTH.SIGNUP_SUB' | translate }}</p>
         </div>
 
@@ -140,7 +140,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       padding: 4px;
       box-shadow: 0 4px 16px rgba(2,16,36,0.15);
     }
-    .card-header h2 {
+    .card-header h2, .signup-title {
       margin: 0 0 6px;
       font-size: 24px;
       font-weight: 800;
@@ -149,7 +149,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     .card-header p {
       margin: 0;
       font-size: 13.5px;
-      color: #5483B3;
+      color: #3a5f8a;
     }
     .success-box {
       background: #e9f7ef; border: 1px solid #a9dfbf;
@@ -163,7 +163,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     label {
       font-size: 11.5px; font-weight: 700;
-      color: #5483B3; letter-spacing: 0.6px; text-transform: uppercase;
+      color: #3a5f8a; letter-spacing: 0.6px; text-transform: uppercase;
     }
     input[type=text], input[type=email], input[type=password], input[type=number] {
       width: 100%; padding: 11px 14px;
@@ -196,7 +196,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       font-weight: 700;
     }
     .role-option input[type=radio] { accent-color: #052659; }
-    .hint { font-size: 12.5px; color: #5483B3; margin: 0; }
+    .hint { font-size: 12.5px; color: #3a5f8a; margin: 0; }
     .hint a { color: #052659; font-weight: 700; text-decoration: none; }
     .hint a:hover { text-decoration: underline; }
     .error-msg {

@@ -34,15 +34,15 @@ import { ApiService } from '../services/api.service';
       <div class="filters-bar">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" [(ngModel)]="filters.search" (input)="filterData()" [placeholder]="'ACCOUNTANT.HISTORY_SEARCH' | translate" />
+          <input type="text" [(ngModel)]="filters.search" (input)="filterData()" [placeholder]="'ACCOUNTANT.HISTORY_SEARCH' | translate" [attr.aria-label]="'ACCOUNTANT.HISTORY_SEARCH' | translate" />
         </div>
         <div class="filter-group">
-          <select [(ngModel)]="filters.status" (change)="filterData()">
+          <select [(ngModel)]="filters.status" (change)="filterData()" [attr.aria-label]="'ACCOUNTANT.ALL_STATUSES' | translate">
             <option value="">{{ 'ACCOUNTANT.ALL_STATUSES' | translate }}</option>
             <option value="APPROVED">{{ 'ACCOUNTANT.APPROVED_COUNT' | translate }}</option>
             <option value="REJECTED">{{ 'ACCOUNTANT.REJECTED_COUNT' | translate }}</option>
           </select>
-          <select [(ngModel)]="filters.employee" (change)="filterData()">
+          <select [(ngModel)]="filters.employee" (change)="filterData()" [attr.aria-label]="'ACCOUNTANT.ALL_EMPLOYEES' | translate">
             <option value="">{{ 'ACCOUNTANT.ALL_EMPLOYEES' | translate }}</option>
             <option *ngFor="let emp of employees" [value]="emp">{{ emp }}</option>
           </select>
@@ -110,7 +110,8 @@ import { ApiService } from '../services/api.service';
       max-width: 1300px;
       margin: 0 auto;
       padding: 2rem;
-      animation: fadeIn 0.4s ease-out;
+      animation: fadeIn 0.25s ease-out;
+      will-change: opacity;
     }
 
     .page-header {
@@ -128,7 +129,7 @@ import { ApiService } from '../services/api.service';
     }
 
     .subtitle {
-      color: #5483B3;
+      color: #3a5f8a;
       margin-top: 0.5rem;
     }
 
@@ -323,8 +324,8 @@ import { ApiService } from '../services/api.service';
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
   `]
 })

@@ -135,7 +135,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styles: [`
     .page-header { margin-bottom: 20px; }
     .page-header h1 { font-size: 26px; font-weight: 800; color: var(--c-darkest, #021024); margin: 0 0 4px; }
-    .page-subtitle { color: var(--c-mid, #5483B3); font-size: 14px; margin: 0; }
+    .page-subtitle { color: #3a5f8a; font-size: 14px; margin: 0; }
     .page-header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
 
     .btn-add {
@@ -258,7 +258,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     .btn-close:hover { color: #052659; }
     .modal-form { display: flex; flex-direction: column; gap: 14px; }
     .modal-form .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .modal-form label { font-size: 12px; font-weight: 600; color: #5483B3; text-transform: uppercase; letter-spacing: 0.5px; }
+    .modal-form label { font-size: 12px; font-weight: 600; color: #3a5f8a; text-transform: uppercase; letter-spacing: 0.5px; }
     .modal-form input { padding: 10px 14px; border: 1.5px solid #C1E8FF; border-radius: 10px; font-size: 14px; font-family: inherit; color: #021024; transition: border-color 0.2s; }
     .modal-form input:focus { outline: none; border-color: #5483B3; box-shadow: 0 0 0 3px rgba(84,131,179,0.1); }
     .status-msg { padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; background: #e9f7ef; color: #1e8449; border: 1px solid #a9dfbf; }

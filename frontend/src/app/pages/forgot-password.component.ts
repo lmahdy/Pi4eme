@@ -15,19 +15,21 @@ import { AuthService } from '../services/auth.service';
         <!-- Icon -->
         <div class="icon-wrap">🔒</div>
 
-        <h2>Forgot Password</h2>
+        <h1>Forgot Password</h1>
         <p class="subtitle">Enter your account email and we'll send you a reset link.</p>
 
         <!-- Form -->
         <form *ngIf="!submitted" (ngSubmit)="submit()">
           <div class="form-group">
-            <label>Email Address</label>
+            <label for="forgot-email">Email Address</label>
             <input
+              id="forgot-email"
               type="email"
               [(ngModel)]="email"
               name="email"
               required
               placeholder="you@example.com"
+              autocomplete="email"
               [class.invalid]="error"
             />
             <p class="error-msg" *ngIf="error">{{ error }}</p>
@@ -89,7 +91,7 @@ import { AuthService } from '../services/auth.service';
     .subtitle {
       margin: 0 0 28px;
       font-size: 13.5px;
-      color: #5483B3;
+      color: #3a5f8a;
     }
 
     form {
@@ -108,7 +110,7 @@ import { AuthService } from '../services/auth.service';
     label {
       font-size: 11.5px;
       font-weight: 700;
-      color: #5483B3;
+      color: #3a5f8a;
       letter-spacing: 0.6px;
       text-transform: uppercase;
     }

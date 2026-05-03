@@ -6,7 +6,7 @@
       <picture>
         <source srcset="assets/tenexa-logo.webp" type="image/webp">
         <img class="brand-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa — Tableau de bord Business Intelligence"
-             width="40" height="40" fetchpriority="high" />
+             width="40" height="40" fetchpriority="high" loading="eager" />
       </picture>
       <div class="brand-text">
         <span class="brand-title">Tenexa</span>
@@ -36,7 +36,7 @@
         </button>
       </div>
       <div class="lang-selector">
-        <label for="lang-select" class="visually-hidden">Choisir la langue</label>
+        <label for="lang-select" class="sr-only">Choisir la langue</label>
         <select id="lang-select" #langSelect (change)="changeLang(langSelect.value)" [value]="currentLang" aria-label="Sélectionner la langue">
           <option value="en">EN</option>
           <option value="fr">FR</option>

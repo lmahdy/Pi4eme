@@ -68,7 +68,7 @@ import { ApiService } from '../services/api.service';
           </div>
 
           <div class="card-footer">
-            <input type="text" [(ngModel)]="req.comment" [placeholder]="'ACCOUNTANT.COMMENT_PLACEHOLDER' | translate" class="comment-input" />
+            <input type="text" [(ngModel)]="req.comment" [placeholder]="'ACCOUNTANT.COMMENT_PLACEHOLDER' | translate" class="comment-input" [attr.aria-label]="'ACCOUNTANT.COMMENT_PLACEHOLDER' | translate" />
             <div class="actions">
               <button class="btn btn-outline" (click)="review(req, 'REJECTED')">{{ 'ACCOUNTANT.REJECT' | translate }}</button>
               <button class="btn btn-primary" (click)="review(req, 'APPROVED')">{{ 'ACCOUNTANT.APPROVE' | translate }}</button>
@@ -91,7 +91,8 @@ import { ApiService } from '../services/api.service';
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
-      animation: fadeIn 0.5s ease-out;
+      animation: fadeIn 0.25s ease-out;
+      will-change: opacity;
     }
 
     .page-header {
@@ -350,8 +351,8 @@ import { ApiService } from '../services/api.service';
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
   `]
 })

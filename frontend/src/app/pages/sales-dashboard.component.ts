@@ -1,3 +1,4 @@
+import 'chart.js/auto';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -159,8 +160,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styles: [`
     .page-header { margin-bottom: 24px; }
     .page-header h1 { font-size: 26px; font-weight: 800; color: var(--c-darkest, #021024); margin: 0 0 6px; }
-    .page-subtitle { color: var(--c-mid, #5483B3); font-size: 14px; margin: 0; }
-    .hint { color: var(--c-light, #7DA0CA); font-size: 12px; margin: 0 0 8px; }
+    .page-subtitle { color: #3a5f8a; font-size: 14px; margin: 0; }
+    .hint { color: #3a5f8a; font-size: 12px; margin: 0 0 8px; }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
     .kpi-card { display: flex; align-items: center; gap: 14px; background: var(--bg-primary, white); border-radius: 14px; padding: 18px 20px; box-shadow: 0 2px 12px rgba(2,16,36,0.08); border: 1px solid rgba(84,131,179,0.1); transition: transform 0.2s, box-shadow 0.2s; }
     .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,16,36,0.12); }

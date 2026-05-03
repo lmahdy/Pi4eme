@@ -19,9 +19,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
         <div class="card-header">
           <picture>
             <source srcset="assets/tenexa-logo.webp" type="image/webp">
-            <img class="card-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa Logo" width="60" height="60" fetchpriority="high" />
+            <img class="card-logo" src="assets/tenexa-logo-opt.png" alt="Tenexa Logo" width="60" height="60" fetchpriority="high" loading="eager" />
           </picture>
-          <h2>{{ 'AUTH.LOGIN_TITLE' | translate }}</h2>
+          <h1 class="login-title">{{ 'AUTH.LOGIN_TITLE' | translate }}</h1>
           <p>{{ 'AUTH.LOGIN_SUB' | translate }}</p>
         </div>
 
@@ -217,7 +217,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       padding: 4px;
       box-shadow: 0 4px 16px rgba(2,16,36,0.15);
     }
-    .card-header h2 {
+    .login-title {
       margin: 0 0 6px;
       font-size: 24px;
       font-weight: 800;

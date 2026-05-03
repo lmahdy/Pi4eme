@@ -1,3 +1,4 @@
+import 'chart.js/auto';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
@@ -125,10 +126,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styles: [`
     .page-header { margin-bottom: 24px; }
     .page-header h1 { font-size: 26px; font-weight: 800; color: var(--c-darkest, #021024); margin: 0 0 6px; }
-    .page-subtitle { color: var(--c-mid, #5483B3); font-size: 14px; margin: 0; }
+    .page-subtitle { color: #3a5f8a; font-size: 14px; margin: 0; }
 
     .kpi-card { text-align: center; }
-    .kpi-label { font-size: 12px; font-weight: 700; color: var(--c-mid, #5483B3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .kpi-label { font-size: 12px; font-weight: 700; color: #3a5f8a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
     .kpi-value { font-size: 24px; font-weight: 800; color: var(--c-darkest, #021024); }
     .kpi-value.positive { color: #059669; }
     .kpi-value.negative { color: #c0392b; }
